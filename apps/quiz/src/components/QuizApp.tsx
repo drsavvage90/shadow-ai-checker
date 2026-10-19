@@ -91,6 +91,7 @@ export function QuizApp() {
   const question = step >= 0 && step < total ? flow[step] : undefined;
   const answered = question ? isAnswered(question, answers) : false;
   const hasAnswers = Object.keys(answers).length > 0;
+  const started = flow.some((item) => isAnswered(item, answers));
 
   function chooseProfile(questionId: string, choiceId: string) {
     setConfirmDelete(false);
@@ -220,7 +221,7 @@ export function QuizApp() {
                 disabled={!picked}
                 onClick={() => setStep(hasAnswers ? firstOpenStep(answers) : 0)}
               >
-                {hasAnswers && picked ? "Continue the readiness check" : "Start the readiness check"}
+                {started ? "Continue the readiness check" : "Start the readiness check"}
               </button>
               {hasAnswers ? (
                 <button type="button" className="quiet" onClick={reset}>
