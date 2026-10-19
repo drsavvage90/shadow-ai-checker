@@ -1,0 +1,9 @@
+Oct 19 08:14:02 dnsmasq[201]: query[A] chatgpt.com from 192.168.1.20
+Oct 19 08:14:02 dnsmasq[201]: forwarded chatgpt.com to 1.1.1.1
+Oct 19 08:14:02 dnsmasq[201]: reply chatgpt.com is 1.2.3.4
+Oct 19 08:15:10 dnsmasq[201]: query[AAAA] chatgpt.com from 192.168.1.20
+Oct 19 08:16:44 dnsmasq[201]: query[A] claude.ai from 192.168.1.31
+Oct 19 08:17:01 dnsmasq[201]: query[A] www.perplexity.ai from 192.168.1.31
+Oct 19 08:18:22 dnsmasq[201]: query[A] example.com from 192.168.1.20
+Oct 19 08:19:05 dnsmasq[201]: query[HTTPS] grammarly.com from 192.168.1.44
+Oct 19 09:02:11 dnsmasq[201]: query[A] cdn.openai.com from 192.168.1.20

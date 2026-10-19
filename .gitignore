@@ -4,6 +4,7 @@ out
 .next
 coverage
 *.log
+!apps/dns-check/examples/*.log
 .DS_Store
 .turbo
 *.tsbuildinfo
