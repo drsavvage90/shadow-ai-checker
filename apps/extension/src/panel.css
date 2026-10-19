@@ -1,0 +1,11 @@
+:root { color: #1c2430; background: #f3efe4; font: 15px/1.45 "Segoe UI", sans-serif; }
+body { margin: 0; padding: 16px; width: 320px; }
+body.wide { width: auto; max-width: 640px; }
+a { color: #8d5b2a; }
+.name { font-family: Palatino, Georgia, serif; font-size: 1.2rem; margin: 0; }
+.by, .foot { color: #445066; margin: 0.2rem 0 0.8rem; }
+h2 { font-size: 1rem; margin: 1rem 0 0.3rem; }
+ul { list-style: none; padding: 0; margin: 0; }
+li { display: flex; justify-content: space-between; gap: 12px; padding: 0.3rem 0; border-bottom: 1px solid #ddd4c4; }
+button { margin-top: 12px; font: inherit; background: #1c2430; color: #f3efe4; border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+section { margin-top: 1rem; }

@@ -1,0 +1,457 @@
+{
+  "version": 1,
+  "services": [
+    {
+      "id": "chatgpt",
+      "name": "ChatGPT",
+      "vendor": "OpenAI",
+      "category": "chat",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["chatgpt.com", "chat.openai.com", "chat.com"]
+    },
+    {
+      "id": "openai-platform",
+      "name": "OpenAI platform",
+      "vendor": "OpenAI",
+      "category": "platform",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["platform.openai.com", "api.openai.com"]
+    },
+    {
+      "id": "claude",
+      "name": "Claude",
+      "vendor": "Anthropic",
+      "category": "chat",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["claude.ai"]
+    },
+    {
+      "id": "anthropic-api",
+      "name": "Anthropic console and API",
+      "vendor": "Anthropic",
+      "category": "platform",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["console.anthropic.com", "api.anthropic.com"]
+    },
+    {
+      "id": "gemini",
+      "name": "Gemini",
+      "vendor": "Google",
+      "category": "chat",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["gemini.google.com", "bard.google.com"]
+    },
+    {
+      "id": "notebooklm",
+      "name": "NotebookLM",
+      "vendor": "Google",
+      "category": "chat",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["notebooklm.google.com"],
+      "note": "Staff often upload source documents here."
+    },
+    {
+      "id": "google-ai-studio",
+      "name": "Google AI Studio",
+      "vendor": "Google",
+      "category": "platform",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["aistudio.google.com"]
+    },
+    {
+      "id": "gemini-api",
+      "name": "Gemini API",
+      "vendor": "Google",
+      "category": "platform",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["generativelanguage.googleapis.com"]
+    },
+    {
+      "id": "copilot",
+      "name": "Microsoft Copilot",
+      "vendor": "Microsoft",
+      "category": "chat",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["copilot.microsoft.com"],
+      "note": "Copilot inside Word, Outlook, or Edge can use broader Microsoft 365 domains that this list intentionally leaves out."
+    },
+    {
+      "id": "github-copilot",
+      "name": "GitHub Copilot",
+      "vendor": "GitHub",
+      "category": "coding",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["githubcopilot.com", "api.githubcopilot.com", "copilot-proxy.githubusercontent.com"]
+    },
+    {
+      "id": "perplexity",
+      "name": "Perplexity",
+      "vendor": "Perplexity",
+      "category": "search",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["perplexity.ai"]
+    },
+    {
+      "id": "grok",
+      "name": "Grok",
+      "vendor": "xAI",
+      "category": "chat",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["grok.com", "grok.x.ai"],
+      "note": "Grok inside the X app is not covered. x.com is too broad to list."
+    },
+    {
+      "id": "meta-ai",
+      "name": "Meta AI",
+      "vendor": "Meta",
+      "category": "chat",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["meta.ai"]
+    },
+    {
+      "id": "poe",
+      "name": "Poe",
+      "vendor": "Quora",
+      "category": "chat",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["poe.com"]
+    },
+    {
+      "id": "mistral",
+      "name": "Mistral",
+      "vendor": "Mistral",
+      "category": "chat",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["mistral.ai"]
+    },
+    {
+      "id": "deepseek",
+      "name": "DeepSeek",
+      "vendor": "DeepSeek",
+      "category": "chat",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["deepseek.com"]
+    },
+    {
+      "id": "you-com",
+      "name": "You.com",
+      "vendor": "You.com",
+      "category": "search",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["you.com"]
+    },
+    {
+      "id": "jasper",
+      "name": "Jasper",
+      "vendor": "Jasper",
+      "category": "writing",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["jasper.ai"]
+    },
+    {
+      "id": "copy-ai",
+      "name": "Copy.ai",
+      "vendor": "Copy.ai",
+      "category": "writing",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["copy.ai"]
+    },
+    {
+      "id": "quillbot",
+      "name": "QuillBot",
+      "vendor": "QuillBot",
+      "category": "writing",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["quillbot.com"]
+    },
+    {
+      "id": "wordtune",
+      "name": "Wordtune",
+      "vendor": "AI21",
+      "category": "writing",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["wordtune.com"]
+    },
+    {
+      "id": "grammarly",
+      "name": "Grammarly",
+      "vendor": "Grammarly",
+      "category": "writing",
+      "signal": "medium",
+      "channels": ["dns", "extension"],
+      "domains": ["grammarly.com"],
+      "note": "A hit shows the product, including its browser extension. It does not show whether generative features were used."
+    },
+    {
+      "id": "deepl",
+      "name": "DeepL",
+      "vendor": "DeepL",
+      "category": "writing",
+      "signal": "medium",
+      "channels": ["dns", "extension"],
+      "domains": ["deepl.com"],
+      "note": "Staff often paste client text into translators."
+    },
+    {
+      "id": "writer",
+      "name": "Writer",
+      "vendor": "Writer",
+      "category": "writing",
+      "signal": "medium",
+      "channels": ["dns", "extension"],
+      "domains": ["writer.com"],
+      "note": "writer.com is the Writer product. Treat a hit as a lead, not proof of an AI prompt."
+    },
+    {
+      "id": "otter",
+      "name": "Otter",
+      "vendor": "Otter.ai",
+      "category": "meeting",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["otter.ai"]
+    },
+    {
+      "id": "fireflies",
+      "name": "Fireflies",
+      "vendor": "Fireflies.ai",
+      "category": "meeting",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["fireflies.ai"]
+    },
+    {
+      "id": "fathom",
+      "name": "Fathom",
+      "vendor": "Fathom",
+      "category": "meeting",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["fathom.video"]
+    },
+    {
+      "id": "descript",
+      "name": "Descript",
+      "vendor": "Descript",
+      "category": "meeting",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["descript.com"]
+    },
+    {
+      "id": "krisp",
+      "name": "Krisp",
+      "vendor": "Krisp",
+      "category": "meeting",
+      "signal": "medium",
+      "channels": ["dns", "extension"],
+      "domains": ["krisp.ai"],
+      "note": "Noise cancellation that can process call audio."
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor",
+      "vendor": "Cursor",
+      "category": "coding",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["cursor.com", "cursor.sh"]
+    },
+    {
+      "id": "windsurf",
+      "name": "Windsurf",
+      "vendor": "Codeium",
+      "category": "coding",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["windsurf.com", "codeium.com"]
+    },
+    {
+      "id": "phind",
+      "name": "Phind",
+      "vendor": "Phind",
+      "category": "coding",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["phind.com"]
+    },
+    {
+      "id": "tabnine",
+      "name": "Tabnine",
+      "vendor": "Tabnine",
+      "category": "coding",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["tabnine.com"]
+    },
+    {
+      "id": "blackbox",
+      "name": "Blackbox",
+      "vendor": "Blackbox",
+      "category": "coding",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["blackbox.ai"]
+    },
+    {
+      "id": "v0",
+      "name": "v0",
+      "vendor": "Vercel",
+      "category": "coding",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["v0.dev"]
+    },
+    {
+      "id": "bolt",
+      "name": "Bolt",
+      "vendor": "StackBlitz",
+      "category": "coding",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["bolt.new"]
+    },
+    {
+      "id": "midjourney",
+      "name": "Midjourney",
+      "vendor": "Midjourney",
+      "category": "image",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["midjourney.com"]
+    },
+    {
+      "id": "heygen",
+      "name": "HeyGen",
+      "vendor": "HeyGen",
+      "category": "image",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["heygen.com"]
+    },
+    {
+      "id": "synthesia",
+      "name": "Synthesia",
+      "vendor": "Synthesia",
+      "category": "image",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["synthesia.io"]
+    },
+    {
+      "id": "runway",
+      "name": "Runway",
+      "vendor": "Runway",
+      "category": "image",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["runwayml.com"]
+    },
+    {
+      "id": "gamma",
+      "name": "Gamma",
+      "vendor": "Gamma",
+      "category": "writing",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["gamma.app"]
+    },
+    {
+      "id": "chatpdf",
+      "name": "ChatPDF",
+      "vendor": "ChatPDF",
+      "category": "chat",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["chatpdf.com"],
+      "note": "Document upload tools are a common way client files leave the firm."
+    },
+    {
+      "id": "character-ai",
+      "name": "Character.AI",
+      "vendor": "Character.AI",
+      "category": "chat",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["character.ai"]
+    },
+    {
+      "id": "pi",
+      "name": "Pi",
+      "vendor": "Inflection",
+      "category": "chat",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["pi.ai"]
+    },
+    {
+      "id": "cohere",
+      "name": "Cohere",
+      "vendor": "Cohere",
+      "category": "platform",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["cohere.com"]
+    },
+    {
+      "id": "openrouter",
+      "name": "OpenRouter",
+      "vendor": "OpenRouter",
+      "category": "platform",
+      "signal": "high",
+      "channels": ["dns", "extension"],
+      "domains": ["openrouter.ai"]
+    },
+    {
+      "id": "huggingface",
+      "name": "Hugging Face",
+      "vendor": "Hugging Face",
+      "category": "platform",
+      "signal": "medium",
+      "channels": ["dns"],
+      "domains": ["huggingface.co"],
+      "note": "The site is broader than hosted chat. DNS only, so the extension does not warn on every paste."
+    },
+    {
+      "id": "glean",
+      "name": "Glean",
+      "vendor": "Glean",
+      "category": "search",
+      "signal": "medium",
+      "channels": ["dns"],
+      "domains": ["glean.com"],
+      "note": "Often an approved enterprise search tool. Listed so the firm can see that it is in use."
+    },
+    {
+      "id": "notion",
+      "name": "Notion",
+      "vendor": "Notion",
+      "category": "writing",
+      "signal": "low",
+      "channels": ["dns"],
+      "domains": ["notion.so", "notion.com"],
+      "note": "Weak signal. The domain is the whole workspace, not only Notion AI."
+    }
+  ]
+}

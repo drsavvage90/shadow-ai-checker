@@ -1,0 +1,28 @@
+{
+  "name": "shadow-ai-checker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Free, open-source Shadow AI Checker for small regulated businesses. By Vault Systems.",
+  "license": "MIT",
+  "author": "Vault Systems (https://vaultsystems.ai)",
+  "type": "module",
+  "packageManager": "pnpm@10.33.4",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "eslint .",
+    "typecheck": "pnpm -r typecheck",
+    "check:wording": "node scripts/check-wording.mjs",
+    "dev": "pnpm --filter @shadow-ai/quiz dev",
+    "icons": "node scripts/build-icons.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.28.0",
+    "eslint": "^9.28.0",
+    "globals": "^16.2.0",
+    "typescript-eslint": "^8.34.0"
+  }
+}

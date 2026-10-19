@@ -1,0 +1,29 @@
+{
+  "name": "@shadow-ai/quiz",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Static, in-browser Shadow AI self-assessment and PDF report.",
+  "license": "MIT",
+  "scripts": {
+    "predev": "pnpm --filter @shadow-ai/core build",
+    "dev": "NEXT_TELEMETRY_DISABLED=1 next dev",
+    "prebuild": "pnpm --filter @shadow-ai/core build",
+    "build": "NEXT_TELEMETRY_DISABLED=1 next build",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@shadow-ai/core": "workspace:*",
+    "jspdf": "^2.5.2",
+    "next": "^15.5.4",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}

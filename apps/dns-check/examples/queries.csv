@@ -1,0 +1,4 @@
+timestamp,domain,client
+2026-10-19T12:00:00Z,gemini.google.com,10.0.0.8
+2026-10-19T12:05:00Z,news.example,10.0.0.8
+"2026-10-19T12:06:00Z","claude.ai","10.0.0.9"

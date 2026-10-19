@@ -1,0 +1,26 @@
+{
+  "name": "@shadow-ai/dns-check",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Scan DNS logs for AI-service domains and export a Pi-hole blocklist and allowlist.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "shadow-ai-dns": "./dist/cli.js"
+  },
+  "scripts": {
+    "prebuild": "pnpm --filter @shadow-ai/core build",
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@shadow-ai/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "esbuild": "^0.25.5",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "@shadow-ai/extension",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Manifest V3 extension that warns on-device when a paste into an AI site looks sensitive.",
+  "license": "MIT",
+  "scripts": {
+    "prebuild": "pnpm --filter @shadow-ai/core build",
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@shadow-ai/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.326",
+    "esbuild": "^0.25.5",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}

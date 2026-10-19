@@ -1,0 +1,15 @@
+node_modules
+dist
+out
+.next
+coverage
+*.log
+.DS_Store
+.turbo
+*.tsbuildinfo
+.pnpm-debug.log*
+apps/extension/*.zip
+tmp-report
+*.local
+.env
+.env.*
