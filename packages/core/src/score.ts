@@ -6,7 +6,8 @@ import {
   LIMITATIONS,
   PROFILE_QUESTION_IDS,
 } from "./brand.js";
-import { questionBank as defaultBank } from "./questions.js";
+import { questionApplies, questionBank as defaultBank, readProfileChoice } from "./questions.js";
+import { buildRulesReport, weightsForProfession } from "./rules.js";
 import type {
   AnswerRecord,
   Answers,
@@ -28,22 +29,22 @@ const BANDS: Record<RiskBand, { title: string; summary: string }> = {
   low: {
     title: "Lower risk",
     summary:
-      "On the answers given, more of the basics are in place. This helps reduce risk only if the tool list stays current when staff or products change.",
+      "On these answers, more of the permission and behavior basics are in place. This helps reduce risk only if the policy, the approved tool, and the training stay current.",
   },
   moderate: {
     title: "Moderate risk",
     summary:
-      "Some controls are in place and some are missing. The fixes are ordered so a small firm can close the gaps that matter first.",
+      "Some of the permission and behavior basics are in place, and some are missing. Start with the gaps under your rules, then the fixes marked Do now.",
   },
   elevated: {
     title: "Elevated risk",
     summary:
-      "Important gaps showed up in how AI tools are used, what information goes into them, or who can still get in. Start with the items marked Do now.",
+      "Important gaps showed up in whether AI use is permitted in practice, or in whether staff will stay on the approved tool. Start with the items marked Do now.",
   },
   high: {
     title: "High risk",
     summary:
-      "The answers describe wide-open use of AI tools. Pause new tools and start with the items marked Do now. This result helps reduce risk. It is not a finding that a law was broken.",
+      "The answers describe wide-open use: little written permission, and little reason for staff to stay on an approved tool. Start with the items marked Do now. This result helps reduce risk. It is not a finding that a law was broken.",
   },
 };
 
@@ -80,24 +81,33 @@ function choiceRisk(choice: Choice): number {
   return choice.risk ?? 0;
 }
 
+function answerRisk(question: Question, answers: Answers): number | null {
+  const selected = selectedChoices(question, answers);
+  if (!selected) return null;
+  if (question.kind === "multi") return Math.max(...selected.map((choice) => choiceRisk(choice)));
+  return choiceRisk(selected[0] ?? { id: "", label: "" });
+}
+
 export function scoreAssessment(
   answers: Answers,
   bank: QuestionBank = defaultBank,
 ): AssessmentResult {
+  const profileIds = readProfileChoice(answers, bank);
+  const profileWeights = weightsForProfession(profileIds.professionId);
+  const applies = (question: Question) => questionApplies(question, profileIds.professionId, profileIds.stateId);
+
   const categories: CategoryScore[] = [];
   for (const category of bank.categories) {
-    const questions = bank.questions.filter((question) => question.category === category.id);
+    const weight = profileWeights[category.id] ?? 0;
+    if (weight <= 0) continue;
+    const questions = bank.questions.filter((question) => question.category === category.id && applies(question));
     let riskSum = 0;
     let maxSum = 0;
     let answered = 0;
     for (const question of questions) {
-      const selected = selectedChoices(question, answers);
-      if (!selected) continue;
+      const risk = answerRisk(question, answers);
+      if (risk === null) continue;
       const maxRisk = Math.max(...question.choices.map((choice) => choiceRisk(choice)));
-      const risk =
-        question.kind === "multi"
-          ? Math.max(...selected.map((choice) => choiceRisk(choice)))
-          : choiceRisk(selected[0] ?? { id: "", label: "" });
       riskSum += risk;
       maxSum += maxRisk;
       answered += 1;
@@ -112,7 +122,7 @@ export function scoreAssessment(
       score,
       band,
       bandTitle: BANDS[band].title,
-      weight: category.weight,
+      weight,
       answered,
     });
   }
@@ -126,7 +136,7 @@ export function scoreAssessment(
 
   const fixes = new Map<string, ReportFix>();
   for (const question of bank.questions) {
-    if (question.role !== "scored") continue;
+    if (question.role !== "scored" || !applies(question)) continue;
     const selected = selectedChoices(question, answers);
     if (!selected) continue;
     for (const choice of selected) {
@@ -148,16 +158,25 @@ export function scoreAssessment(
   const profile = buildProfile(bank, answers);
   const inventory = bank.questions.find((question) => question.id === INVENTORY_QUESTION_ID);
   const tools = inventory ? labelsFor(inventory, answers) : [];
-  const answerRecords: AnswerRecord[] = bank.questions.map((question) => ({
+  const visibleQuestions = bank.questions.filter((question) => applies(question));
+  const answerRecords: AnswerRecord[] = visibleQuestions.map((question) => ({
     questionId: question.id,
     section: question.section,
     prompt: question.prompt,
     labels: labelsFor(question, answers),
   }));
-  const scoredTotal = bank.questions.filter((question) => question.role === "scored").length;
-  const scoredAnswered = bank.questions.filter(
-    (question) => question.role === "scored" && selectedChoices(question, answers),
-  ).length;
+  const scoredQuestions = visibleQuestions.filter((question) => question.role === "scored");
+  const scoredTotal = scoredQuestions.length;
+  const scoredAnswered = scoredQuestions.filter((question) => answerRisk(question, answers) !== null).length;
+  const rules = buildRulesReport({
+    professionId: profileIds.professionId,
+    stateId: profileIds.stateId,
+    questionRisk: (questionId) => {
+      const question = bank.questions.find((item) => item.id === questionId);
+      if (!question || !applies(question)) return null;
+      return answerRisk(question, answers);
+    },
+  });
 
   return {
     version: bank.version,
@@ -176,6 +195,7 @@ export function scoreAssessment(
       profile.segmentId === "healthcare"
         ? "You identified a healthcare practice. The fixes here are HIPAA-aligned habits. They do not settle the practice's HIPAA duties."
         : null,
+    rules,
     scoredAnswered,
     scoredTotal,
   };
@@ -187,17 +207,16 @@ function buildProfile(bank: QuestionBank, answers: Answers): ProfileSummary {
   const statesQuestion = bank.questions.find((question) => question.id === PROFILE_QUESTION_IDS.states);
   const segmentChoice = segmentQuestion ? selectedChoices(segmentQuestion, answers)?.[0] : undefined;
   const sizeChoice = sizeQuestion ? selectedChoices(sizeQuestion, answers)?.[0] : undefined;
-  const stateChoices = statesQuestion ? selectedChoices(statesQuestion, answers) ?? [] : [];
-  const stateIds = new Set(stateChoices.map((choice) => choice.id));
+  const stateChoice = statesQuestion ? selectedChoices(statesQuestion, answers)?.[0] : undefined;
   return {
     segmentId: segmentChoice?.id ?? null,
     segmentLabel: segmentChoice?.label ?? null,
     staffSizeLabel: sizeChoice?.label ?? null,
-    stateLabels: stateChoices.map((choice) => choice.label),
-    appalachianStates: APPALACHIAN_STATE_IDS.some((id) => stateIds.has(id)),
+    stateLabels: stateChoice ? [stateChoice.label] : [],
+    appalachianStates: APPALACHIAN_STATE_IDS.some((id) => id === stateChoice?.id),
   };
 }
 
 export function categoryOrder(): CategoryId[] {
-  return ["data", "accounts", "policy", "tools", "training"];
+  return ["permission", "behavior", "verification", "data"];
 }

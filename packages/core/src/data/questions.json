@@ -1,35 +1,29 @@
 {
-  "version": 1,
+  "version": 2,
   "categories": [
     {
-      "id": "tools",
-      "title": "Tool use",
-      "weight": 0.15,
-      "description": "Whether the firm knows which AI tools are in use and who may add a new one."
+      "id": "permission",
+      "title": "Am I allowed to?",
+      "weight": 0.34,
+      "description": "Written permission: a policy, consent where your rules expect it, training, vendor terms, and an approved-tool list."
+    },
+    {
+      "id": "behavior",
+      "title": "Will staff use it?",
+      "weight": 0.28,
+      "description": "Whether the approved tool is real, easy, and good enough, or staff still leave through a personal account."
+    },
+    {
+      "id": "verification",
+      "title": "Is the output checked?",
+      "weight": 0.18,
+      "description": "Whether a person checks AI output, especially citations, before it is filed or sent."
     },
     {
       "id": "data",
-      "title": "Data handling",
-      "weight": 0.3,
-      "description": "What information reaches an AI tool, and whether anyone checks the output."
-    },
-    {
-      "id": "policy",
-      "title": "Policies",
+      "title": "What goes into the tool",
       "weight": 0.2,
-      "description": "Written rules, a named owner, vendor terms, and a path for a bad paste."
-    },
-    {
-      "id": "training",
-      "title": "Training",
-      "weight": 0.15,
-      "description": "Whether staff have been told what not to put into an AI tool."
-    },
-    {
-      "id": "accounts",
-      "title": "Accounts and access",
-      "weight": 0.2,
-      "description": "Whose login is in use, whether access ends when someone leaves, and which devices count."
+      "description": "What kinds of information reach an AI tool, and whether there is a written limit."
     }
   ],
   "questions": [
@@ -39,13 +33,27 @@
       "kind": "single",
       "section": "About your firm",
       "prompt": "Which description is closest to the business?",
-      "hint": "The report uses this only to tailor the last-page suggestion. It is not sent anywhere.",
+      "hint": "The questions, the score weights, and the rules section follow this choice. It is not sent anywhere.",
       "choices": [
         { "id": "law", "label": "Law firm" },
-        { "id": "cpa", "label": "CPA or accounting firm" },
+        { "id": "cpa", "label": "Accounting / CPA" },
         { "id": "healthcare", "label": "Healthcare practice" },
-        { "id": "bank", "label": "Community bank or credit union" },
-        { "id": "other", "label": "Another regulated or professional business" }
+        { "id": "bank", "label": "Bank or credit union" },
+        { "id": "other", "label": "Other" }
+      ]
+    },
+    {
+      "id": "profile.states",
+      "role": "profile",
+      "kind": "single",
+      "section": "About your firm",
+      "prompt": "Which state's professional rules should this check use?",
+      "hint": "Pick the state that governs the practice, or Other if it is somewhere else. This check encodes Ohio, Kentucky, and West Virginia to start.",
+      "choices": [
+        { "id": "oh", "label": "Ohio" },
+        { "id": "ky", "label": "Kentucky" },
+        { "id": "wv", "label": "West Virginia" },
+        { "id": "other", "label": "Other" }
       ]
     },
     {
@@ -63,27 +71,12 @@
       ]
     },
     {
-      "id": "profile.states",
-      "role": "profile",
-      "kind": "multi",
-      "section": "About your firm",
-      "prompt": "Where does the business operate?",
-      "hint": "Select every state that applies. This quiz was written with small firms in Ohio, Kentucky, and West Virginia in mind.",
-      "choices": [
-        { "id": "oh", "label": "Ohio" },
-        { "id": "ky", "label": "Kentucky" },
-        { "id": "wv", "label": "West Virginia" },
-        { "id": "other", "label": "Another state" },
-        { "id": "unspecified", "label": "Prefer not to say", "exclusive": true }
-      ]
-    },
-    {
       "id": "tools.inventory",
       "role": "inventory",
       "kind": "multi",
       "section": "AI tools",
       "prompt": "Which AI tools do people use for work, as far as you know?",
-      "hint": "Include free websites, browser sidebars, meeting bots, and coding tools. The DNS check and the browser extension look for a longer list than this question.",
+      "hint": "Include free websites and personal accounts. This list is context for the report. The browser extension and the DNS check can look at a longer catalog on managed devices.",
       "choices": [
         { "id": "chatgpt", "label": "ChatGPT" },
         { "id": "claude", "label": "Claude" },
@@ -98,112 +91,352 @@
       ]
     },
     {
-      "id": "tools.visibility",
+      "id": "permission.policy",
       "role": "scored",
       "kind": "single",
-      "section": "AI tools",
-      "category": "tools",
-      "prompt": "Do you have a current list of the AI tools staff use for work?",
+      "section": "Am I allowed to?",
+      "category": "permission",
+      "prompt": "Do you have a written policy on how staff may use AI for work?",
+      "hint": "A written policy is one of the things Kentucky's ethics opinion expects supervisory lawyers to have. Other states in this check do not all say the same thing. The report cites the source for the state you picked.",
       "choices": [
-        {
-          "id": "current",
-          "label": "Yes. It is written down and was updated in the last six months.",
-          "risk": 0
-        },
+        { "id": "written", "label": "Yes. It is written, and staff can find it.", "risk": 0 },
         {
           "id": "partial",
-          "label": "We have a partial list, or it is older than six months.",
+          "label": "We have notes or an email, not a policy people can find.",
           "risk": 2,
           "fix": {
-            "id": "refresh-inventory",
+            "id": "write-ai-policy",
             "priority": "soon",
-            "title": "Bring the AI tool list up to date",
-            "detail": "Ask each person which sites and apps they use for work, including free accounts. Date the list and look at it twice a year. The DNS check in this toolkit can confirm what the office resolver sees."
+            "title": "Turn the AI notes into a written policy",
+            "detail": "Write who may use AI, which tools are approved, what information stays out, and who reviews output. Give every person the current copy."
           }
         },
         {
-          "id": "unknown",
-          "label": "We do not know which AI tools staff use.",
+          "id": "none",
+          "label": "No. There is no written AI policy.",
           "risk": 4,
           "fix": {
-            "id": "refresh-inventory",
+            "id": "write-ai-policy",
             "priority": "now",
-            "title": "Write down the AI tools staff use for work",
-            "detail": "Ask each person which sites and apps they use for work, including free accounts. Date the list and look at it twice a year. The DNS check in this toolkit can confirm what the office resolver sees."
+            "title": "Write an AI policy staff can find",
+            "detail": "Write who may use AI, which tools are approved, what information stays out, and who reviews output. Give every person the current copy."
           }
         }
       ]
     },
     {
-      "id": "tools.approval",
+      "id": "permission.consent",
       "role": "scored",
       "kind": "single",
-      "section": "AI tools",
-      "category": "tools",
-      "prompt": "How do new AI tools get into daily work?",
+      "section": "Am I allowed to?",
+      "category": "permission",
+      "prompt": "When staff put client, patient, customer, or taxpayer information into a generative AI tool, do you have a consent or approval process for the cases where your rules expect one?",
+      "hint": "Not every state requires consent for every use. West Virginia's advisory ethics materials say a lawyer should get informed client approval, confirmed in writing, before using generative AI. Kentucky's ethics opinion does not state a general duty to disclose ordinary AI research. Tax-return information is a separate federal rule.",
       "choices": [
         {
-          "id": "approved",
-          "label": "Someone approves a tool before staff use it for work.",
+          "id": "written",
+          "label": "Yes. Informed consent or approval is confirmed in writing when the rules that apply to us call for it.",
           "risk": 0
         },
         {
-          "id": "after",
-          "label": "People start using a tool, and it is reviewed later, if at all.",
-          "risk": 3,
+          "id": "no-client-data",
+          "label": "We do not put client, patient, customer, or taxpayer information into AI tools.",
+          "risk": 0
+        },
+        {
+          "id": "informal",
+          "label": "We mention AI sometimes, but consent is not informed and not confirmed in writing.",
+          "risk": 2,
           "fix": {
-            "id": "approve-tools",
+            "id": "write-consent-path",
             "priority": "soon",
-            "title": "Approve AI tools before people rely on them",
-            "detail": "Pick one owner. A new tool is either allowed for work or it is not. Write the decision next to the tool list."
+            "title": "Write the consent path your rules actually expect",
+            "detail": "Read the rules section of this report before you draft a form. Where consent is expected, say what the tool is, what information goes in, and what the limits are, and keep the written approval."
           }
         },
         {
-          "id": "shadow",
-          "label": "Staff pick tools on their own.",
+          "id": "none",
+          "label": "No. We have no consent or approval process.",
           "risk": 4,
           "fix": {
-            "id": "approve-tools",
+            "id": "write-consent-path",
             "priority": "now",
-            "title": "Require approval before a new AI tool is used for work",
-            "detail": "Pick one owner. A new tool is either allowed for work or it is not. Write the decision next to the tool list."
+            "title": "Decide when consent is required and write it down",
+            "detail": "Read the rules section of this report before you draft a form. Where consent is expected, say what the tool is, what information goes in, and what the limits are, and keep the written approval."
           }
         }
       ]
     },
     {
-      "id": "tools.meetings",
+      "id": "permission.training",
       "role": "scored",
       "kind": "single",
-      "section": "AI tools",
-      "category": "tools",
-      "prompt": "Do meeting bots or AI note-takers join client, patient, or customer calls?",
+      "section": "Am I allowed to?",
+      "category": "permission",
+      "prompt": "Have staff been trained on the AI policy, including what they may not put into a tool?",
+      "choices": [
+        { "id": "current", "label": "Yes. Training happened in the last year, including new hires.", "risk": 0 },
+        {
+          "id": "once",
+          "label": "Some people were told once. It is not repeated for new hires.",
+          "risk": 2,
+          "fix": {
+            "id": "train-staff",
+            "priority": "soon",
+            "title": "Train staff on the AI policy",
+            "detail": "Walk through the approved tools, the information that stays out, and how to check output. Repeat it for new hires. Some ethics opinions, including Kentucky's KBA E-457, treat training as part of supervising AI use."
+          }
+        },
+        {
+          "id": "none",
+          "label": "No. Staff have not been trained.",
+          "risk": 4,
+          "fix": {
+            "id": "train-staff",
+            "priority": "now",
+            "title": "Train staff on the AI policy",
+            "detail": "Walk through the approved tools, the information that stays out, and how to check output. Repeat it for new hires. Some ethics opinions, including Kentucky's KBA E-457, treat training as part of supervising AI use."
+          }
+        }
+      ]
+    },
+    {
+      "id": "permission.vendor",
+      "role": "scored",
+      "kind": "single",
+      "section": "Am I allowed to?",
+      "category": "permission",
+      "prompt": "Have you read the vendor's terms or data-processing agreement for whether it trains on client, patient, customer, or taxpayer information?",
+      "hint": "A SOC 2 report or a security webpage answers a different question. This one is about training and the contract, not the audit logo.",
       "choices": [
         {
-          "id": "controlled",
-          "label": "No, or only with notice to the other party and an owner's approval.",
+          "id": "dpa",
+          "label": "Yes. We have terms or a data-processing agreement that say this information is not used to train their models.",
           "risk": 0
         },
         {
-          "id": "inconsistent",
-          "label": "Sometimes. Notice is inconsistent.",
+          "id": "no-client-data",
+          "label": "We do not put that information into any AI tool, so there is nothing for a vendor to train on.",
+          "risk": 0
+        },
+        {
+          "id": "soc2-only",
+          "label": "We have a SOC 2 report or a security page, and we have not checked the training terms.",
           "risk": 3,
           "fix": {
-            "id": "meeting-bots",
+            "id": "read-training-terms",
+            "priority": "now",
+            "title": "Read whether the vendor trains on client data",
+            "detail": "A security report does not answer this. Read the data-processing agreement or the product terms and write down whether client, patient, customer, or taxpayer information is used to train a model."
+          }
+        },
+        {
+          "id": "unread",
+          "label": "We have not reviewed terms or a data-processing agreement.",
+          "risk": 4,
+          "fix": {
+            "id": "read-training-terms",
+            "priority": "now",
+            "title": "Read whether the vendor trains on client data",
+            "detail": "A security report does not answer this. Read the data-processing agreement or the product terms and write down whether client, patient, customer, or taxpayer information is used to train a model."
+          }
+        }
+      ]
+    },
+    {
+      "id": "permission.approved-list",
+      "role": "scored",
+      "kind": "single",
+      "section": "Am I allowed to?",
+      "category": "permission",
+      "prompt": "Is there a written list of AI tools that are approved for work?",
+      "choices": [
+        { "id": "current", "label": "Yes. The list is written and was looked at in the last six months.", "risk": 0 },
+        {
+          "id": "stale",
+          "label": "There is a list, but it is incomplete or older than six months.",
+          "risk": 2,
+          "fix": {
+            "id": "refresh-approved-list",
             "priority": "soon",
-            "title": "Set a rule for meeting bots on client calls",
-            "detail": "Decide which bots are allowed, who may turn them on, and that the other party hears about it before the bot joins. Recordings and transcripts are client information."
+            "title": "Refresh the approved-tool list",
+            "detail": "Name each tool staff may use, who owns the account, and what information is off limits. Date the list and read it twice a year. The DNS check can show what the office resolver already sees."
+          }
+        },
+        {
+          "id": "none",
+          "label": "No. There is no approved-tool list.",
+          "risk": 4,
+          "fix": {
+            "id": "refresh-approved-list",
+            "priority": "now",
+            "title": "Write the approved-tool list",
+            "detail": "Name each tool staff may use, who owns the account, and what information is off limits. Date the list and read it twice a year. The DNS check can show what the office resolver already sees."
+          }
+        }
+      ]
+    },
+    {
+      "id": "behavior.approved",
+      "role": "scored",
+      "kind": "single",
+      "section": "Will staff use the approved tool?",
+      "category": "behavior",
+      "prompt": "Is there an approved AI tool staff are supposed to use for work?",
+      "hint": "An approved tool on the books is not the same as a tool people actually open. The next questions are about that gap.",
+      "choices": [
+        { "id": "yes", "label": "Yes. There is a named tool on an account the firm controls.", "risk": 0 },
+        {
+          "id": "weak",
+          "label": "People were told a tool is fine, but the firm does not own the account.",
+          "risk": 3,
+          "fix": {
+            "id": "name-approved-tool",
+            "priority": "now",
+            "title": "Put the approved tool on an account you control",
+            "detail": "Name one tool for ordinary work and issue the accounts yourself. If you cannot close the login when someone leaves, it is not yet an approved tool."
+          }
+        },
+        {
+          "id": "no",
+          "label": "No. There is no approved tool.",
+          "risk": 4,
+          "fix": {
+            "id": "name-approved-tool",
+            "priority": "now",
+            "title": "Name an approved AI tool",
+            "detail": "Pick one tool for ordinary work, issue the accounts yourself, and tell staff that other tools are not for client, patient, customer, or taxpayer information."
+          }
+        }
+      ]
+    },
+    {
+      "id": "behavior.fit",
+      "role": "scored",
+      "kind": "single",
+      "section": "Will staff use the approved tool?",
+      "category": "behavior",
+      "prompt": "Is that approved tool easy enough, and good enough, that staff can finish ordinary work in it?",
+      "choices": [
+        { "id": "yes", "label": "Yes. Staff can do ordinary tasks in it without a workaround.", "risk": 0 },
+        {
+          "id": "mixed",
+          "label": "It works for some tasks. For others, people say it is too slow, blocked, or weak.",
+          "risk": 2,
+          "fix": {
+            "id": "fix-approved-tool-fit",
+            "priority": "soon",
+            "title": "Make the approved tool good enough for ordinary work",
+            "detail": "Ask which tasks send people to a personal account. If the approved tool is blocked, slow, or missing a feature they use every day, fix that before you add another rule."
+          }
+        },
+        {
+          "id": "no",
+          "label": "No. People work around it because it is hard to use or not good enough.",
+          "risk": 4,
+          "fix": {
+            "id": "fix-approved-tool-fit",
+            "priority": "now",
+            "title": "Make the approved tool good enough for ordinary work",
+            "detail": "Ask which tasks send people to a personal account. If the approved tool is blocked, slow, or missing a feature they use every day, fix that before you add another rule."
+          }
+        },
+        {
+          "id": "no-tool",
+          "label": "There is no approved tool to judge.",
+          "risk": 3,
+          "fix": {
+            "id": "name-approved-tool",
+            "priority": "now",
+            "title": "Name an approved AI tool",
+            "detail": "Pick one tool for ordinary work, issue the accounts yourself, and tell staff that other tools are not for client, patient, customer, or taxpayer information."
+          }
+        }
+      ]
+    },
+    {
+      "id": "behavior.personal",
+      "role": "scored",
+      "kind": "single",
+      "section": "Will staff use the approved tool?",
+      "category": "behavior",
+      "prompt": "Do staff still use personal AI accounts for work?",
+      "hint": "Personal accounts include a free login someone opened themselves, even if an approved tool already exists.",
+      "choices": [
+        { "id": "no", "label": "No. Work stays on accounts the firm issued.", "risk": 0 },
+        {
+          "id": "rare",
+          "label": "Rarely. We have seen it and we dealt with the person.",
+          "risk": 1
+        },
+        {
+          "id": "some",
+          "label": "Some people still use a personal account for work.",
+          "risk": 3,
+          "fix": {
+            "id": "close-personal-accounts",
+            "priority": "now",
+            "title": "Close the personal-account path",
+            "detail": "If an approved tool exists, ask why staff still open a personal account. Fix the approved tool if it is slow or blocked, and say what happens when work goes through a personal login."
+          }
+        },
+        {
+          "id": "common",
+          "label": "This is normal. Personal accounts are how a lot of work gets done.",
+          "risk": 4,
+          "fix": {
+            "id": "close-personal-accounts",
+            "priority": "now",
+            "title": "Close the personal-account path",
+            "detail": "If an approved tool exists, ask why staff still open a personal account. Fix the approved tool if it is slow or blocked, and say what happens when work goes through a personal login."
           }
         },
         {
           "id": "unknown",
           "label": "We do not know.",
+          "risk": 3,
+          "fix": {
+            "id": "close-personal-accounts",
+            "priority": "soon",
+            "title": "Find out who still uses a personal AI account",
+            "detail": "Ask each person, including owners, whether work goes through a login the firm did not issue. Write down the answer and decide what happens next time."
+          }
+        }
+      ]
+    },
+    {
+      "id": "behavior.norm",
+      "role": "scored",
+      "kind": "single",
+      "section": "Will staff use the approved tool?",
+      "category": "behavior",
+      "prompt": "If someone uses an unapproved tool or a personal account for work, is there a known norm or consequence?",
+      "choices": [
+        {
+          "id": "clear",
+          "label": "Yes. Staff know it is outside the policy, and a named person follows up.",
+          "risk": 0
+        },
+        {
+          "id": "soft",
+          "label": "People know it is frowned on. Nothing specific happens.",
+          "risk": 2,
+          "fix": {
+            "id": "set-consequence",
+            "priority": "later",
+            "title": "Say what happens when work leaves the approved tool",
+            "detail": "Write the follow-up in the policy: who is told, what the person is asked to stop, and when a client or customer must be told. A rule with no follow-up is easy to ignore."
+          }
+        },
+        {
+          "id": "none",
+          "label": "No. There is no norm and no consequence.",
           "risk": 4,
           "fix": {
-            "id": "meeting-bots",
-            "priority": "now",
-            "title": "Find out whether meeting bots join client calls",
-            "detail": "Ask staff about Otter, Fireflies, Fathom, and built-in note-takers. Until you know, tell people not to add a bot to a client, patient, or customer call."
+            "id": "set-consequence",
+            "priority": "soon",
+            "title": "Say what happens when work leaves the approved tool",
+            "detail": "Write the follow-up in the policy: who is told, what the person is asked to stop, and when a client or customer must be told. A rule with no follow-up is easy to ignore."
           }
         }
       ]
@@ -212,525 +445,183 @@
       "id": "data.types",
       "role": "scored",
       "kind": "multi",
-      "section": "Data",
+      "section": "What goes into the tool",
       "category": "data",
-      "prompt": "What kinds of information have staff put into AI tools for work?",
-      "hint": "Select every kind that applies. If you are not sure, say so. A low guess hides risk.",
+      "prompt": "What kinds of information have gone into an AI tool for work?",
+      "hint": "Count personal accounts and free websites. Select every kind that applies.",
       "choices": [
-        {
-          "id": "unknown",
-          "label": "We do not know what people paste or upload.",
-          "risk": 4,
-          "exclusive": true,
-          "fix": {
-            "id": "learn-what-is-pasted",
-            "priority": "now",
-            "title": "Find out what information staff put into AI tools",
-            "detail": "Ask a sample of people to walk through last week's tools and the kinds of text they pasted. You want categories, not a copy of the prompt."
-          }
-        },
-        {
-          "id": "public",
-          "label": "Public information only, such as marketing copy or published rules.",
-          "risk": 0
-        },
-        {
-          "id": "internal",
-          "label": "Internal operations, not client, patient, or customer information.",
-          "risk": 1
-        },
+        { "id": "public", "label": "Public information or our own marketing text", "risk": 0 },
+        { "id": "internal", "label": "Internal notes that are not client, patient, or customer records", "risk": 2 },
         {
           "id": "client",
-          "label": "Client, patient, or customer names, or descriptions of their matters.",
+          "label": "Client, patient, customer, or taxpayer information",
           "risk": 3,
           "fix": {
             "id": "stop-client-pastes",
             "priority": "now",
-            "title": "Keep client, patient, and customer matters out of public AI tools",
-            "detail": "Tell staff that names plus a description of a matter, a return, a chart, or an account is enough to be a problem. Use an approved tool with a firm account, or do not use AI for that draft."
-          }
-        },
-        {
-          "id": "financial",
-          "label": "Financial records, tax identifiers, or account numbers.",
-          "risk": 4,
-          "fix": {
-            "id": "stop-financial-pastes",
-            "priority": "now",
-            "title": "Keep financial records and tax identifiers out of public AI tools",
-            "detail": "Returns, statements, EINs, account numbers, and similar records do not belong in a free chat tool. If a product is allowed to see them, that decision should be written down after someone reads the vendor terms."
+            "title": "Stop pasting client information into unapproved tools",
+            "detail": "Until the approved tool's terms say what happens to that information, keep client, patient, customer, and taxpayer records out of personal accounts and consumer chat sites."
           }
         },
         {
           "id": "regulated",
-          "label": "Social Security numbers, payment card numbers, or health details.",
+          "label": "Social Security numbers, account numbers, card numbers, or treatment details",
           "risk": 4,
           "fix": {
             "id": "stop-regulated-pastes",
             "priority": "now",
-            "title": "Keep SSNs, card numbers, and health details out of AI prompts",
-            "detail": "Treat a paste of these as an incident even when the tool is familiar. The browser extension can warn on a managed browser. It cannot see a personal phone."
+            "title": "Keep regulated identifiers out of AI prompts",
+            "detail": "Tell staff that Social Security numbers, account and card numbers, and treatment details do not go into an AI tool. This helps reduce risk. It does not settle HIPAA or any other duty."
           }
-        }
+        },
+        {
+          "id": "unknown",
+          "label": "We do not know what people paste",
+          "risk": 3,
+          "fix": {
+            "id": "stop-client-pastes",
+            "priority": "now",
+            "title": "Find out what information reaches AI tools",
+            "detail": "Ask each person what they paste, including into personal accounts. Write the answer down and decide what stays out before the next matter or filing."
+          }
+        },
+        { "id": "none", "label": "Nothing. We do not put work information into AI tools.", "risk": 0, "exclusive": true }
       ]
     },
     {
       "id": "data.rule",
       "role": "scored",
       "kind": "single",
-      "section": "Data",
+      "section": "What goes into the tool",
       "category": "data",
-      "prompt": "Is there a rule that confidential client, patient, or customer information stays out of public AI tools?",
+      "prompt": "Is there a written rule that client, patient, customer, or taxpayer information stays out of unapproved AI tools?",
       "choices": [
+        { "id": "written", "label": "Yes. It is written in the policy staff can find.", "risk": 0 },
         {
-          "id": "written",
-          "label": "Yes. It is written and staff can find it.",
-          "risk": 0
-        },
-        {
-          "id": "informal",
-          "label": "There is an informal expectation.",
+          "id": "verbal",
+          "label": "People have been told. It is not written.",
           "risk": 2,
           "fix": {
             "id": "write-data-rule",
             "priority": "soon",
-            "title": "Write the rule on what must not go into an AI tool",
-            "detail": "One page is enough: which tools are allowed, what information is off limits, and who to tell if something sensitive was pasted."
+            "title": "Write the rule for client information",
+            "detail": "Add one paragraph to the AI policy: which information never goes into an unapproved tool, and which approved tool, if any, may receive it."
           }
         },
         {
           "id": "no",
-          "label": "No.",
+          "label": "No. There is no rule.",
           "risk": 4,
           "fix": {
             "id": "write-data-rule",
             "priority": "now",
-            "title": "Write the rule on what must not go into an AI tool",
-            "detail": "One page is enough: which tools are allowed, what information is off limits, and who to tell if something sensitive was pasted."
+            "title": "Write the rule for client information",
+            "detail": "Add one paragraph to the AI policy: which information never goes into an unapproved tool, and which approved tool, if any, may receive it."
           }
         }
       ]
     },
     {
-      "id": "data.review",
+      "id": "verification.review",
       "role": "scored",
       "kind": "single",
-      "section": "Data",
-      "category": "data",
-      "prompt": "Does a person review AI output before it is sent to a client or used in a filing, return, chart, or customer message?",
+      "section": "Is the output checked?",
+      "category": "verification",
+      "prompt": "Before a filing or a client communication that used generative AI goes out, does a lawyer review the draft?",
+      "hint": "This section is for law firms. A person, not the tool, is responsible for what is filed or sent.",
+      "appliesTo": { "professions": ["law"] },
       "choices": [
-        {
-          "id": "not-used",
-          "label": "We do not use AI output in that work.",
-          "risk": 0
-        },
-        {
-          "id": "always",
-          "label": "Yes. A person reviews it first.",
-          "risk": 0
-        },
+        { "id": "always", "label": "Yes. A lawyer reviews every such draft before it goes out.", "risk": 0 },
         {
           "id": "sometimes",
-          "label": "Sometimes.",
-          "risk": 2,
-          "fix": {
-            "id": "review-output",
-            "priority": "soon",
-            "title": "Have a person check AI output before it leaves the firm",
-            "detail": "Name the kind of work that needs a human review: advice, filings, returns, charts, and anything a client will see. The person who signs the work is responsible for the words."
-          }
-        },
-        {
-          "id": "as-is",
-          "label": "No. Output is used as it comes back.",
-          "risk": 4,
-          "fix": {
-            "id": "review-output",
-            "priority": "now",
-            "title": "Have a person check AI output before it leaves the firm",
-            "detail": "Name the kind of work that needs a human review: advice, filings, returns, charts, and anything a client will see. The person who signs the work is responsible for the words."
-          }
-        }
-      ]
-    },
-    {
-      "id": "data.vendor-training",
-      "role": "scored",
-      "kind": "single",
-      "section": "Data",
-      "category": "data",
-      "prompt": "Do you know whether the AI vendors train on your prompts?",
-      "choices": [
-        {
-          "id": "controlled",
-          "label": "Work is done in accounts where training on our prompts is turned off, or we confirmed the vendor does not train on them.",
-          "risk": 0
-        },
-        {
-          "id": "free",
-          "label": "People use free accounts and we have not checked.",
+          "label": "Sometimes. It depends on who is busy.",
           "risk": 3,
           "fix": {
-            "id": "check-vendor-training",
-            "priority": "soon",
-            "title": "Check whether the AI vendor trains on your prompts",
-            "detail": "Open the settings for each approved tool. Prefer a firm plan that does not train on customer content. Free tiers often do the opposite by default."
-          }
-        },
-        {
-          "id": "unknown",
-          "label": "We do not know.",
-          "risk": 4,
-          "fix": {
-            "id": "check-vendor-training",
+            "id": "review-before-sending",
             "priority": "now",
-            "title": "Check whether the AI vendor trains on your prompts",
-            "detail": "Open the settings for each approved tool. Prefer a firm plan that does not train on customer content. Free tiers often do the opposite by default."
-          }
-        }
-      ]
-    },
-    {
-      "id": "policy.written",
-      "role": "scored",
-      "kind": "single",
-      "section": "Rules",
-      "category": "policy",
-      "prompt": "Is there a written AI use policy staff can find?",
-      "choices": [
-        {
-          "id": "yes",
-          "label": "Yes. It covers approved tools and information that is off limits.",
-          "risk": 0
-        },
-        {
-          "id": "draft",
-          "label": "A draft or a short email exists.",
-          "risk": 2,
-          "fix": {
-            "id": "write-policy",
-            "priority": "soon",
-            "title": "Finish a written AI use policy staff can find",
-            "detail": "Put it where people already look for policies. Cover approved tools, prohibited data, meeting bots, and who to call after a mistake."
+            "title": "Review AI drafts before they are filed or sent",
+            "detail": "Assign a lawyer to read the draft, the facts, and the citations before a filing or client communication goes out. Kentucky, West Virginia, and Ohio materials in this check all treat a human review as part of competent use."
           }
         },
         {
           "id": "no",
-          "label": "No.",
+          "label": "No. Drafts go out without that review.",
           "risk": 4,
           "fix": {
-            "id": "write-policy",
+            "id": "review-before-sending",
             "priority": "now",
-            "title": "Write an AI use policy staff can find",
-            "detail": "Put it where people already look for policies. Cover approved tools, prohibited data, meeting bots, and who to call after a mistake."
+            "title": "Review AI drafts before they are filed or sent",
+            "detail": "Assign a lawyer to read the draft, the facts, and the citations before a filing or client communication goes out. Kentucky, West Virginia, and Ohio materials in this check all treat a human review as part of competent use."
           }
         }
       ]
     },
     {
-      "id": "policy.owner",
+      "id": "verification.citations",
       "role": "scored",
       "kind": "single",
-      "section": "Rules",
-      "category": "policy",
-      "prompt": "Is one person named to approve AI tools and revisit the topic?",
+      "section": "Is the output checked?",
+      "category": "verification",
+      "prompt": "Are citations, quotations, and legal propositions from an AI tool checked against the source by a person before they are filed or sent?",
+      "hint": "Courts have sanctioned filings that relied on citations a generative tool invented. KBA E-457 cites Mata v. Avianca as one example from another jurisdiction. This question does not predict a sanction in your court.",
+      "appliesTo": { "professions": ["law"] },
       "choices": [
+        { "id": "always", "label": "Yes. A person opens the source and checks it every time.", "risk": 0 },
         {
-          "id": "named",
-          "label": "Yes. A named person does this at least once a year.",
-          "risk": 0
-        },
-        {
-          "id": "loose",
-          "label": "It is shared loosely among owners.",
-          "risk": 2,
+          "id": "sometimes",
+          "label": "Sometimes, if the citation looks important.",
+          "risk": 3,
           "fix": {
-            "id": "name-an-owner",
-            "priority": "soon",
-            "title": "Name one person to approve AI tools",
-            "detail": "One owner or manager is enough. Their job is the tool list, the policy, and a yearly pass. They do not have to be an IT specialist."
-          }
-        },
-        {
-          "id": "none",
-          "label": "No one owns it.",
-          "risk": 4,
-          "fix": {
-            "id": "name-an-owner",
+            "id": "check-citations",
             "priority": "now",
-            "title": "Name one person to approve AI tools",
-            "detail": "One owner or manager is enough. Their job is the tool list, the policy, and a yearly pass. They do not have to be an IT specialist."
-          }
-        }
-      ]
-    },
-    {
-      "id": "policy.terms",
-      "role": "scored",
-      "kind": "single",
-      "section": "Rules",
-      "category": "policy",
-      "prompt": "Has anyone read the vendor terms for tools that can see client information?",
-      "hint": "Where health information is involved, a business associate agreement is one HIPAA-aligned control among others.",
-      "choices": [
-        {
-          "id": "no-confidential",
-          "label": "No approved tool is allowed to see confidential information.",
-          "risk": 0
-        },
-        {
-          "id": "reviewed",
-          "label": "Yes. Someone reviewed confidentiality terms, and a business associate agreement where health information is involved.",
-          "risk": 0
-        },
-        {
-          "id": "glanced",
-          "label": "Someone glanced at the terms.",
-          "risk": 2,
-          "fix": {
-            "id": "review-terms",
-            "priority": "later",
-            "title": "Read the vendor terms for tools that see client information",
-            "detail": "Look for training on your content, where data is stored, who the vendor uses as a subprocessor, and how to delete an account. A healthcare practice should also ask whether a business associate agreement is offered."
+            "title": "Check citations before anything is filed or sent",
+            "detail": "Have a person open the cited source and confirm the quotation and the proposition. Courts have sanctioned filings that relied on citations a generative tool invented. This step helps reduce that risk. It does not predict what a court will do."
           }
         },
         {
           "id": "no",
-          "label": "No.",
-          "risk": 3,
+          "label": "No. Citations are not checked against the source.",
+          "risk": 4,
           "fix": {
-            "id": "review-terms",
-            "priority": "soon",
-            "title": "Read the vendor terms for tools that see client information",
-            "detail": "Look for training on your content, where data is stored, who the vendor uses as a subprocessor, and how to delete an account. A healthcare practice should also ask whether a business associate agreement is offered."
+            "id": "check-citations",
+            "priority": "now",
+            "title": "Check citations before anything is filed or sent",
+            "detail": "Have a person open the cited source and confirm the quotation and the proposition. Courts have sanctioned filings that relied on citations a generative tool invented. This step helps reduce that risk. It does not predict what a court will do."
           }
         }
       ]
     },
     {
-      "id": "policy.incident",
+      "id": "verification.return",
       "role": "scored",
       "kind": "single",
-      "section": "Rules",
-      "category": "policy",
-      "prompt": "If someone pastes sensitive information into an AI tool, do staff know how to report it?",
+      "section": "Is the output checked?",
+      "category": "verification",
+      "prompt": "Before an AI-assisted return, schedule, or client memo is filed or delivered, does a person check the facts, figures, and any citations?",
+      "hint": "IRS Office of Professional Responsibility guidance applies existing Circular 230 diligence and competence duties to generative AI in this way. Circular 230 has no separate AI section.",
+      "appliesTo": { "professions": ["cpa"] },
       "choices": [
+        { "id": "always", "label": "Yes. A person checks facts, figures, and citations every time.", "risk": 0 },
         {
-          "id": "yes",
-          "label": "Yes. They know who to tell.",
-          "risk": 0
-        },
-        {
-          "id": "improvise",
-          "label": "We would improvise.",
-          "risk": 2,
+          "id": "sometimes",
+          "label": "Sometimes. It depends on the return.",
+          "risk": 3,
           "fix": {
-            "id": "incident-path",
-            "priority": "soon",
-            "title": "Tell staff how to report a bad paste",
-            "detail": "Give one name or inbox. Ask people to report the tool, the time, and the kind of information, not to forward the sensitive text again."
+            "id": "review-tax-output",
+            "priority": "now",
+            "title": "Review AI-assisted tax work before it goes out",
+            "detail": "Have a person check the facts, the figures, and any citations before a return or memo is filed or delivered. IRS guidance applies Circular 230 diligence and competence duties to generative AI. This check does not decide that a duty was met."
           }
         },
         {
           "id": "no",
-          "label": "No.",
+          "label": "No. That review is not part of the process.",
           "risk": 4,
           "fix": {
-            "id": "incident-path",
+            "id": "review-tax-output",
             "priority": "now",
-            "title": "Tell staff how to report a bad paste",
-            "detail": "Give one name or inbox. Ask people to report the tool, the time, and the kind of information, not to forward the sensitive text again."
-          }
-        }
-      ]
-    },
-    {
-      "id": "training.done",
-      "role": "scored",
-      "kind": "single",
-      "section": "Training",
-      "category": "training",
-      "prompt": "Have staff been trained on what not to put into an AI tool?",
-      "choices": [
-        {
-          "id": "current",
-          "label": "Yes. Current staff were trained, new hires hear it, and it was refreshed in the last year.",
-          "risk": 0
-        },
-        {
-          "id": "once",
-          "label": "Once. New hires are not covered, or it has not been refreshed in the last year.",
-          "risk": 2,
-          "fix": {
-            "id": "train-staff",
-            "priority": "soon",
-            "title": "Train staff, including new hires, on AI data rules",
-            "detail": "A short session is enough: approved tools, examples of what stays out, meeting bots, and how to report a mistake. Repeat it when you hire and at least yearly."
-          }
-        },
-        {
-          "id": "no",
-          "label": "No.",
-          "risk": 4,
-          "fix": {
-            "id": "train-staff",
-            "priority": "now",
-            "title": "Train staff on what not to put into an AI tool",
-            "detail": "A short session is enough: approved tools, examples of what stays out, meeting bots, and how to report a mistake. Repeat it when you hire and at least yearly."
-          }
-        }
-      ]
-    },
-    {
-      "id": "accounts.business",
-      "role": "scored",
-      "kind": "single",
-      "section": "Accounts",
-      "category": "accounts",
-      "prompt": "Whose accounts do people use for work AI tools?",
-      "choices": [
-        {
-          "id": "none",
-          "label": "AI tools are not used for work.",
-          "risk": 0
-        },
-        {
-          "id": "firm",
-          "label": "Firm-controlled accounts.",
-          "risk": 0
-        },
-        {
-          "id": "mix",
-          "label": "A mix of personal and firm accounts.",
-          "risk": 3,
-          "fix": {
-            "id": "firm-accounts",
-            "priority": "soon",
-            "title": "Move work AI use onto firm-controlled accounts",
-            "detail": "Personal logins leave the chat history with the employee. Issue firm accounts for approved tools and tell staff that work prompts do not go through a personal login."
-          }
-        },
-        {
-          "id": "personal",
-          "label": "Mostly personal or free logins.",
-          "risk": 4,
-          "fix": {
-            "id": "firm-accounts",
-            "priority": "now",
-            "title": "Move work AI use onto firm-controlled accounts",
-            "detail": "Personal logins leave the chat history with the employee. Issue firm accounts for approved tools and tell staff that work prompts do not go through a personal login."
-          }
-        }
-      ]
-    },
-    {
-      "id": "accounts.offboarding",
-      "role": "scored",
-      "kind": "single",
-      "section": "Accounts",
-      "category": "accounts",
-      "prompt": "When someone leaves, can you turn off their access to AI tools used for work?",
-      "choices": [
-        {
-          "id": "yes",
-          "label": "Yes.",
-          "risk": 0
-        },
-        {
-          "id": "some",
-          "label": "Only for some tools.",
-          "risk": 2,
-          "fix": {
-            "id": "offboarding",
-            "priority": "soon",
-            "title": "Make sure AI access ends when someone leaves",
-            "detail": "Add each approved AI tool to the same leaver checklist as email. If the login is personal, you cannot turn it off. That is a reason to move the work to a firm account."
-          }
-        },
-        {
-          "id": "no",
-          "label": "No, or we do not know.",
-          "risk": 4,
-          "fix": {
-            "id": "offboarding",
-            "priority": "now",
-            "title": "Make sure AI access ends when someone leaves",
-            "detail": "Add each approved AI tool to the same leaver checklist as email. If the login is personal, you cannot turn it off. That is a reason to move the work to a firm account."
-          }
-        }
-      ]
-    },
-    {
-      "id": "accounts.devices",
-      "role": "scored",
-      "kind": "single",
-      "section": "Accounts",
-      "category": "accounts",
-      "prompt": "Where do people use AI tools for work?",
-      "hint": "This checker cannot see unmanaged or personal devices. A DNS log only sees queries that use the firm's resolver.",
-      "choices": [
-        {
-          "id": "managed",
-          "label": "Only on firm-managed browsers or computers.",
-          "risk": 0
-        },
-        {
-          "id": "personal",
-          "label": "Also on personal phones or home computers.",
-          "risk": 3,
-          "fix": {
-            "id": "managed-devices",
-            "priority": "soon",
-            "title": "Decide whether work AI use is allowed on personal devices",
-            "detail": "Shadow AI Checker and a DNS log do not cover unmanaged or personal devices. If personal phones are allowed, the policy has to do the work, because the extension will not be there."
-          }
-        },
-        {
-          "id": "unknown",
-          "label": "We do not know.",
-          "risk": 4,
-          "fix": {
-            "id": "managed-devices",
-            "priority": "now",
-            "title": "Find out which devices staff use for AI tools",
-            "detail": "Shadow AI Checker and a DNS log do not cover unmanaged or personal devices. Ask whether work prompts happen on home computers or personal phones, and write down what is allowed."
-          }
-        }
-      ]
-    },
-    {
-      "id": "accounts.history",
-      "role": "scored",
-      "kind": "single",
-      "section": "Accounts",
-      "category": "accounts",
-      "prompt": "Where does AI chat history for work live?",
-      "choices": [
-        {
-          "id": "firm",
-          "label": "In firm accounts an admin can still reach.",
-          "risk": 0
-        },
-        {
-          "id": "personal",
-          "label": "In personal accounts the firm cannot open.",
-          "risk": 3,
-          "fix": {
-            "id": "chat-history",
-            "priority": "soon",
-            "title": "Move AI chat history into accounts the firm controls",
-            "detail": "History in a personal login walks out with the employee. Use firm accounts, and decide how long history is kept."
-          }
-        },
-        {
-          "id": "unknown",
-          "label": "We do not know.",
-          "risk": 4,
-          "fix": {
-            "id": "chat-history",
-            "priority": "now",
-            "title": "Find out where AI chat history is stored",
-            "detail": "History in a personal login walks out with the employee. Use firm accounts, and decide how long history is kept."
+            "title": "Review AI-assisted tax work before it goes out",
+            "detail": "Have a person check the facts, the figures, and any citations before a return or memo is filed or delivered. IRS guidance applies Circular 230 diligence and competence duties to generative AI. This check does not decide that a duty was met."
           }
         }
       ]

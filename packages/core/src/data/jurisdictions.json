@@ -1,0 +1,223 @@
+{
+  "version": 1,
+  "notLegalAdvice": "This AI readiness check is not legal advice and not an ethics opinion. It is a general checklist. Whether you may use a given AI tool depends on your jurisdiction, your court or regulator, your client or customer, and the facts. Confirm anything that would change how you practice with a lawyer or the authority that regulates you. The check helps reduce risk. It does not decide that a duty was met.",
+  "states": [
+    { "id": "oh", "name": "Ohio" },
+    { "id": "ky", "name": "Kentucky" },
+    { "id": "wv", "name": "West Virginia" },
+    { "id": "other", "name": "Other" }
+  ],
+  "professions": [
+    { "id": "law", "name": "Law firm" },
+    { "id": "cpa", "name": "Accounting / CPA" },
+    { "id": "healthcare", "name": "Healthcare practice" },
+    { "id": "bank", "name": "Bank or credit union" },
+    { "id": "other", "name": "Other" }
+  ],
+  "weightProfiles": [
+    {
+      "id": "law",
+      "professions": ["law"],
+      "weights": { "permission": 0.28, "behavior": 0.22, "verification": 0.32, "data": 0.18 }
+    },
+    {
+      "id": "cpa",
+      "professions": ["cpa"],
+      "weights": { "permission": 0.32, "behavior": 0.18, "verification": 0.28, "data": 0.22 }
+    },
+    {
+      "id": "default",
+      "professions": ["healthcare", "bank", "other"],
+      "weights": { "permission": 0.42, "behavior": 0.33, "data": 0.25 }
+    }
+  ],
+  "expectations": [
+    {
+      "id": "ky-e457-policy-training",
+      "states": ["ky"],
+      "professions": ["law"],
+      "summary": "KBA E-457 answers yes to Question 7: partners and managers who supervise lawyers or nonlawyers using generative AI need policies and training.",
+      "citation": "Kentucky Bar Association, Ethics Opinion KBA E-457 (Mar. 15, 2024), Question 7",
+      "url": "https://kybar.org/Portals/0/Admin/Ethics%20Opinions/KBA%20E-457.pdf",
+      "relatedQuestions": ["permission.policy", "permission.training"]
+    },
+    {
+      "id": "ky-e457-confidentiality",
+      "states": ["ky"],
+      "professions": ["law"],
+      "summary": "KBA E-457 answers yes to Question 5: the duty to safeguard confidential client information continues when a lawyer uses AI.",
+      "citation": "Kentucky Bar Association, Ethics Opinion KBA E-457 (Mar. 15, 2024), Question 5",
+      "url": "https://kybar.org/Portals/0/Admin/Ethics%20Opinions/KBA%20E-457.pdf",
+      "relatedQuestions": ["data.rule", "permission.vendor"]
+    },
+    {
+      "id": "ky-e457-accuracy",
+      "states": ["ky"],
+      "professions": ["law"],
+      "summary": "KBA E-457 answers yes to Question 6: before a lawyer files or submits work prepared with generative AI, the lawyer reviews it for accuracy and reviews the court's rules on AI.",
+      "citation": "Kentucky Bar Association, Ethics Opinion KBA E-457 (Mar. 15, 2024), Question 6",
+      "url": "https://kybar.org/Portals/0/Admin/Ethics%20Opinions/KBA%20E-457.pdf",
+      "relatedQuestions": ["verification.review", "verification.citations"]
+    },
+    {
+      "id": "ky-e457-no-general-disclosure",
+      "states": ["ky"],
+      "professions": ["law"],
+      "summary": "KBA E-457 answers no to a general duty to tell the client about ordinary AI research. The opinion still says disclosure can be required when work is outsourced, when the client is charged for an AI cost, or when a court rule requires it.",
+      "citation": "Kentucky Bar Association, Ethics Opinion KBA E-457 (Mar. 15, 2024), Question 2",
+      "url": "https://kybar.org/Portals/0/Admin/Ethics%20Opinions/KBA%20E-457.pdf",
+      "relatedQuestions": []
+    },
+    {
+      "id": "ky-e457-fees",
+      "states": ["ky"],
+      "professions": ["law"],
+      "summary": "KBA E-457, Question 4, says a lawyer may charge an AI expense only if the client agrees in advance and the agreement is confirmed in writing. Training and overhead are not chargeable.",
+      "citation": "Kentucky Bar Association, Ethics Opinion KBA E-457 (Mar. 15, 2024), Question 4",
+      "url": "https://kybar.org/Portals/0/Admin/Ethics%20Opinions/KBA%20E-457.pdf",
+      "relatedQuestions": []
+    },
+    {
+      "id": "wv-leo-advisory",
+      "states": ["wv"],
+      "professions": ["law"],
+      "summary": "The Lawyer Disciplinary Board lists L.E.O. 2024-01, Artificial Intelligence. The Board's index says its legal ethics opinions are advisory and are not binding on the Supreme Court of Appeals of West Virginia.",
+      "citation": "West Virginia Lawyer Disciplinary Board, Legal Ethics Opinion index, L.E.O. 2024-01",
+      "url": "https://wvodc.org/Legal-Ethics-Opinion",
+      "relatedQuestions": []
+    },
+    {
+      "id": "wv-leo-consent",
+      "states": ["wv"],
+      "professions": ["law"],
+      "summary": "The West Virginia State Bar Office of Disciplinary Counsel's 2024 slides, describing L.E.O. 2024-01, say a lawyer should obtain the client's approval before using generative AI. They say consent must be informed and should be confirmed in writing, including a discussion of risks and limitations. The slides also say nothing in the rules per se prohibits AI, and that a lawyer should check court standing orders.",
+      "citation": "West Virginia State Bar, Office of Disciplinary Counsel, 2024 training slides describing L.E.O. 2024-01",
+      "url": "https://wvbar.org/wp-content/uploads/2024/08/ODC-Presentation-1.pdf",
+      "relatedQuestions": ["permission.consent"]
+    },
+    {
+      "id": "wv-leo-terms",
+      "states": ["wv"],
+      "professions": ["law"],
+      "summary": "Those same slides say a lawyer should review the tool's terms of use and privacy policy before using it with client information.",
+      "citation": "West Virginia State Bar, Office of Disciplinary Counsel, 2024 training slides describing L.E.O. 2024-01",
+      "url": "https://wvbar.org/wp-content/uploads/2024/08/ODC-Presentation-1.pdf",
+      "relatedQuestions": ["permission.vendor"]
+    },
+    {
+      "id": "wv-leo-oversight",
+      "states": ["wv"],
+      "professions": ["law"],
+      "summary": "Those slides say a human stays responsible for the work, including candor to the court if a generative tool produces a citation that is not real.",
+      "citation": "West Virginia State Bar, Office of Disciplinary Counsel, 2024 training slides describing L.E.O. 2024-01",
+      "url": "https://wvbar.org/wp-content/uploads/2024/08/ODC-Presentation-1.pdf",
+      "relatedQuestions": ["verification.review", "verification.citations"]
+    },
+    {
+      "id": "oh-guide-nonbinding",
+      "states": ["oh"],
+      "professions": ["law"],
+      "summary": "The Ohio Ethics Guide: Artificial Intelligence for Lawyers and Judicial Officers (Board of Professional Conduct, 2026) is nonbinding staff guidance. The guide says it does not reflect the views of the Board, the Commissioners, or the Supreme Court of Ohio. It says the rules do not prohibit AI. It does not, by itself, require a written firm AI policy or written client consent.",
+      "citation": "Ohio Board of Professional Conduct, Ohio Ethics Guide: Artificial Intelligence for Lawyers and Judicial Officers (2026)",
+      "url": "https://www.bpc.ohio.gov/_files/ugd/c6a571_4e12e5f9a0104eaebe9351007c899b4f.pdf",
+      "relatedQuestions": []
+    },
+    {
+      "id": "oh-guide-review",
+      "states": ["oh"],
+      "professions": ["law"],
+      "summary": "The same Ohio staff guide says competent use includes human review of facts, legal citations, and propositions of law in filings and summaries. It notes that lawyers in other jurisdictions have been sanctioned for fictitious citations. It does not identify an Ohio sanction case.",
+      "citation": "Ohio Board of Professional Conduct, Ohio Ethics Guide: Artificial Intelligence for Lawyers and Judicial Officers (2026)",
+      "url": "https://www.bpc.ohio.gov/_files/ugd/c6a571_4e12e5f9a0104eaebe9351007c899b4f.pdf",
+      "relatedQuestions": ["verification.review", "verification.citations"]
+    },
+    {
+      "id": "aba-512",
+      "states": ["*"],
+      "professions": ["law"],
+      "summary": "ABA Formal Opinion 512 (July 29, 2024) is guidance under the ABA Model Rules. It discusses competence, confidentiality, communication, supervision, candor to the tribunal, and reasonable fees when lawyers use generative AI. It says informed consent may be required before a lawyer puts confidential information into a tool, depending on that tool. It is not, by itself, the rule in Ohio, Kentucky, or West Virginia.",
+      "citation": "ABA Standing Committee on Ethics and Professional Responsibility, Formal Opinion 512 (July 29, 2024)",
+      "url": "https://www.americanbar.org/content/dam/aba/administrative/professional_responsibility/ethics-opinions/aba-formal-opinion-512.pdf",
+      "relatedQuestions": []
+    },
+    {
+      "id": "law-other-state",
+      "states": ["other"],
+      "professions": ["law"],
+      "summary": "No state ethics opinion is encoded for Other. Check the ethics authority and the court rules where you practice. The national model guidance in this section is not a state rule.",
+      "citation": "Shadow AI Checker jurisdiction file. No state opinion is encoded for Other.",
+      "url": "https://www.americanbar.org/content/dam/aba/administrative/professional_responsibility/ethics-opinions/aba-formal-opinion-512.pdf",
+      "relatedQuestions": []
+    },
+    {
+      "id": "irc-7216",
+      "states": ["*"],
+      "professions": ["cpa"],
+      "summary": "IRC §7216 makes it a misdemeanor for a tax return preparer to knowingly or recklessly disclose tax-return information, or to use it for a purpose other than preparing the return, unless a statute, a court order, or a Treasury regulation allows that disclosure or use. Treasury Regulation §301.7216-3 generally requires the taxpayer's knowing, voluntary written consent before a disclosure or use that is not otherwise authorized. Putting client tax-return information into a tool run by someone else, or into a tool that uses the information to train a model, can be the kind of disclosure these rules address. This check does not decide whether a particular tool or consent form meets §7216.",
+      "citation": "26 U.S.C. §7216; Treas. Reg. §301.7216-3; IRS Section 7216 Information Center",
+      "url": "https://www.law.cornell.edu/uscode/text/26/7216",
+      "relatedQuestions": ["permission.consent", "permission.vendor", "data.types"]
+    },
+    {
+      "id": "circular-230",
+      "states": ["*"],
+      "professions": ["cpa"],
+      "summary": "Circular 230 §10.22 requires due diligence in preparing, approving, and filing returns and in determining the correctness of representations to the Treasury and to clients. Section 10.35 requires competence. IRS Office of Professional Responsibility Issue 2026-19 applies those duties to generative AI: review AI-created documents before delivery or filing, and verify facts, citations, and calculations. Circular 230 has no separate section on AI, and this check does not read it as a ban on AI tools.",
+      "citation": "31 C.F.R. §§10.22 and 10.35; IRS OPR Issue 2026-19, Introductory Guidelines for Responsible AI Use in Federal Tax Practice",
+      "url": "https://www.irs.gov/pub/opr-taxpros/issue-number-2026-19-introductory-guidelines-for-responsible-ai-use-in-federal-tax-practice.pdf",
+      "relatedQuestions": ["verification.return"]
+    },
+    {
+      "id": "cpa-no-state-opinion",
+      "states": ["*"],
+      "professions": ["cpa"],
+      "summary": "This checklist does not encode a separate Ohio, Kentucky, or West Virginia board of accountancy opinion on AI. The items above are federal preparer rules.",
+      "citation": "Shadow AI Checker jurisdiction file. No state board of accountancy AI opinion is encoded.",
+      "url": "https://www.irs.gov/tax-professionals/section-7216-information-center",
+      "relatedQuestions": []
+    },
+    {
+      "id": "healthcare-no-state-opinion",
+      "states": ["*"],
+      "professions": ["healthcare"],
+      "summary": "This checklist does not encode a state medical-board AI opinion for Ohio, Kentucky, West Virginia, or Other. The questions are HIPAA-aligned habits: an approved tool, a limit on what goes into a prompt, and training. They do not settle a practice's HIPAA duties.",
+      "citation": "Shadow AI Checker jurisdiction file. No state medical-board AI opinion is encoded.",
+      "url": "https://vaultsystems.ai",
+      "relatedQuestions": []
+    },
+    {
+      "id": "bank-no-agency-rule",
+      "states": ["*"],
+      "professions": ["bank"],
+      "summary": "This checklist does not encode a separate banking-agency AI regulation. The practical questions are whether customer information stays in a tool the institution approved, and whether staff still have a personal-account path around it. The example further down is one SEC disclosure. It does not mean every bank must file a Form 8-K.",
+      "citation": "Shadow AI Checker jurisdiction file. No banking-agency AI regulation is encoded.",
+      "url": "https://www.sec.gov/Archives/edgar/data/1605301/000160530126000021/cbfv-20260507.htm",
+      "relatedQuestions": []
+    },
+    {
+      "id": "other-profession",
+      "states": ["*"],
+      "professions": ["other"],
+      "summary": "No profession-specific ethics rule is encoded for Other. The score is the permission and behavior checklist only. If you are a law firm, an accounting or CPA firm, a healthcare practice, or a bank or credit union, go back and pick that profession so the report cites the sources for it.",
+      "citation": "Shadow AI Checker jurisdiction file. No profession-specific rule is encoded for Other.",
+      "url": "https://vaultsystems.ai",
+      "relatedQuestions": []
+    }
+  ],
+  "notes": [
+    {
+      "id": "law-sanctions",
+      "states": ["*"],
+      "professions": ["law"],
+      "summary": "Filing or sending citations a person has not checked can lead to sanctions. KBA E-457 cites Mata v. Avianca, Inc., 2023 WL 4114965 (S.D.N.Y. June 22, 2023), a case in which a court sanctioned lawyers for a filing that relied on citations a generative tool invented. The Ohio staff guide also notes that lawyers in other jurisdictions have been sanctioned for fictitious citations. This checklist does not predict a sanction in any court."
+    }
+  ],
+  "example": {
+    "summary": "In a May 2026 Form 8-K under Item 1.05, CB Financial Services, Inc. said its subsidiary, Community Bank, became aware on May 5, 2026 that an incident involved handling non-public customer information with an unauthorized AI software application. The company decided the incident was material on May 7, 2026 because of the volume and sensitivity of the data. The filing lists customer names, Social Security numbers, and dates of birth, and says operations were not disrupted.",
+    "citation": "CB Financial Services, Inc., Form 8-K, Item 1.05 (filed May 2026)",
+    "url": "https://www.sec.gov/Archives/edgar/data/1605301/000160530126000021/cbfv-20260507.htm",
+    "newsSummary": "American Banker later reported statements from the bank's chief executive and chief operating officer that the bank already offered an approved AI tool on bank-issued accounts, and that an employee used an unapproved tool through a personal account while preparing a presentation. That detail is in the news report, not in the 8-K text. Treat it as the bank's later account of why the behavior questions are separate from the permission questions.",
+    "newsCitation": "American Banker, reporting statements by Community Bank's chief executive and chief operating officer",
+    "newsUrl": "https://www.americanbanker.com/news/a-bank-breaks-its-silence-on-its-shadow-ai-breach"
+  }
+}

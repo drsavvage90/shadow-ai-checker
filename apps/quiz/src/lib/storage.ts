@@ -1,12 +1,12 @@
-import { questionBank, type Question } from "@shadow-ai/core";
+import { questionBank, questionsInFlow, type Question } from "@shadow-ai/core";
 
 export type PersistedQuiz = {
-  version: 1;
+  version: 2;
   step: number;
   answers: Record<string, string | string[]>;
 };
 
-const KEY = "shadow-ai-checker.v1";
+const KEY = "shadow-ai-checker.v2";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -25,15 +25,16 @@ export function isAnswered(question: Question, answers: Record<string, string | 
 }
 
 export function firstOpenStep(answers: Record<string, string | string[]>): number {
-  const index = questionBank.questions.findIndex((question) => !isAnswered(question, answers));
-  return index === -1 ? questionBank.questions.length : index;
+  const flow = questionsInFlow(answers);
+  const index = flow.findIndex((question) => !isAnswered(question, answers));
+  return index === -1 ? flow.length : index;
 }
 
 export function parseStored(raw: string | null): PersistedQuiz | null {
   if (!raw) return null;
   try {
     const value: unknown = JSON.parse(raw);
-    if (!isRecord(value) || value.version !== 1) return null;
+    if (!isRecord(value) || value.version !== 2) return null;
     if (typeof value.step !== "number" || !Number.isInteger(value.step)) return null;
     if (!isRecord(value.answers)) return null;
     const answers: Record<string, string | string[]> = {};
@@ -48,8 +49,8 @@ export function parseStored(raw: string | null): PersistedQuiz | null {
         if (ids.length > 0) answers[question.id] = ids;
       }
     }
-    const step = Math.min(Math.max(value.step, -1), questionBank.questions.length);
-    return { version: 1, step, answers };
+    const step = Math.min(Math.max(value.step, -1), questionsInFlow(answers).length);
+    return { version: 2, step, answers };
   } catch {
     return null;
   }

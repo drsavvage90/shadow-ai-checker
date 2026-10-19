@@ -39,7 +39,7 @@ export type SensitiveFinding = {
   count: number;
 };
 
-export type CategoryId = "tools" | "data" | "policy" | "training" | "accounts";
+export type CategoryId = "permission" | "behavior" | "verification" | "data";
 
 export type QuestionRole = "profile" | "inventory" | "scored";
 
@@ -69,6 +69,11 @@ export type Category = {
   description: string;
 };
 
+export type AppliesTo = {
+  professions?: string[];
+  states?: string[];
+};
+
 export type Question = {
   id: string;
   role: QuestionRole;
@@ -78,6 +83,7 @@ export type Question = {
   prompt: string;
   hint?: string;
   choices: Choice[];
+  appliesTo?: AppliesTo;
 };
 
 export type QuestionBank = {
@@ -126,6 +132,44 @@ export type CallToAction = {
   body: string;
 };
 
+export type RuleCitation = {
+  id: string;
+  summary: string;
+  citation: string;
+  url: string;
+};
+
+export type RuleGap = RuleCitation & {
+  detail: string;
+};
+
+export type RuleNote = {
+  id: string;
+  summary: string;
+};
+
+export type RuleExample = {
+  intro: string;
+  summary: string;
+  citation: string;
+  url: string;
+  newsSummary: string;
+  newsCitation: string;
+  newsUrl: string;
+};
+
+export type RulesReport = {
+  notLegalAdvice: string;
+  stateId: string | null;
+  stateName: string | null;
+  professionId: string | null;
+  professionName: string | null;
+  expectations: RuleCitation[];
+  gaps: RuleGap[];
+  notes: RuleNote[];
+  example: RuleExample | null;
+};
+
 export type AssessmentResult = {
   version: number;
   overallScore: number;
@@ -140,6 +184,7 @@ export type AssessmentResult = {
   limitations: string[];
   cta: CallToAction;
   hipaaNote: string | null;
+  rules: RulesReport;
   scoredAnswered: number;
   scoredTotal: number;
 };

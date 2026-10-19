@@ -44,12 +44,23 @@ Edit `packages/core/src/data/questions.json`.
 - Scored choices use an integer `risk` from 0 to 4. Every scored question needs a 0 and a choice of at least 3.
 - Profile and inventory questions are not scored and must not set `risk`.
 - A `fix` is a concrete next step for a small firm. Reuse a fix `id` when two choices on the same question are the same action at different urgency.
-- Category weights must sum to 1.
-- Keep the bank near 20 questions so the quiz stays about 10 minutes.
+- Category weights in the question bank must sum to 1. The score uses the profession weights in `jurisdictions.json` instead, and those profiles must also sum to 1.
+- `appliesTo.professions` limits a question to a profession. Law-firm citation questions and the CPA review question use it. Omit it when every profession should see the question.
+- Keep the bank near 20 questions so the check stays about 10 minutes.
+
+## Add a state or a cited rule
+
+Edit `packages/core/src/data/jurisdictions.json`.
+
+- Add the state id to `states`, to the state question in `questions.json`, and to `STATE_IDS` in `packages/core/src/brand.ts`.
+- State-specific expectations list that state id. Federal or model rules use `"states": ["*"]` so a new state inherits them on purpose.
+- Every expectation needs a summary, a citation, and an `https` URL you have actually read. If you cannot verify a requirement, omit it or say the checklist does not encode it.
+- `relatedQuestions` turns an expectation into a gap when an answer scores 2 or higher. Leave the list empty for background statements, including Kentucky's "no general disclosure duty" answer and Ohio's nonbinding guide.
+- Put a profession's category weights in `weightProfiles`. Every profession is in exactly one profile, and a profile must weight every category that profession is asked about.
 
 ## Wording
 
-Say "helps reduce risk." You may say "HIPAA-aligned" for a practice that already handles health information. Do not promise a legal outcome or that a duty was met. `pnpm check:wording` catches a few overclaims. Read the sentence anyway.
+Say "helps reduce risk." You may say "HIPAA-aligned" for a practice that already handles health information. Do not promise a legal outcome, a sanction avoided, or that a duty was met. Say "not legal advice." `pnpm check:wording` catches a few overclaims. Read the sentence anyway.
 
 Be plain that unmanaged and personal devices are out of scope.
 

@@ -70,13 +70,14 @@ export function buildReportDocument(
   write(`${result.bandTitle}: ${result.overallScore} out of 100`, 16, "times", "bold", NAVY, 4);
   write(result.bandSummary, 11, "helvetica", "normal", NAVY, 6);
   write(
-    `Based on ${result.scoredAnswered} of ${result.scoredTotal} scored questions. This self-assessment helps reduce risk. It is not a legal opinion.`,
+    `Based on ${result.scoredAnswered} of ${result.scoredTotal} scored questions for this state and profession. This readiness check helps reduce risk. It is not legal advice.`,
     10,
     "helvetica",
     "italic",
     MUTED,
     8,
   );
+  write(result.rules.notLegalAdvice, 10, "helvetica", "normal", NAVY, 8);
 
   const profileBits = [
     result.profile.segmentLabel ? `Business: ${result.profile.segmentLabel}` : null,
@@ -85,19 +86,29 @@ export function buildReportDocument(
   ].filter((line): line is string => Boolean(line));
   for (const line of profileBits) write(line, 11, "helvetica", "normal", NAVY, 2);
   if (profileBits.length > 0) y += 6;
-  if (result.profile.appalachianStates) {
-    write(
-      "You noted Ohio, Kentucky, or West Virginia. The suggestions are written with small firms in those states in mind. Devices the firm does not manage are still outside what this checker can see.",
-      10,
-      "helvetica",
-      "normal",
-      MUTED,
-      6,
-    );
-  }
   if (result.hipaaNote) write(result.hipaaNote, 10, "helvetica", "normal", MUTED, 6);
 
-  write("Risk by category", 14, "times", "bold", NAVY, 8);
+  write("What your rules expect", 14, "times", "bold", NAVY, 6);
+  if (result.rules.expectations.length === 0) {
+    write("No rule is encoded until a state and a profession are selected.", 11, "helvetica", "normal", NAVY, 6);
+  }
+  for (const item of result.rules.expectations) {
+    write(item.summary, 11, "helvetica", "normal", NAVY, 2);
+    write(`${item.citation}  ${item.url}`, 9, "helvetica", "italic", MUTED, 6);
+  }
+  for (const note of result.rules.notes) write(note.summary, 10, "helvetica", "normal", MUTED, 6);
+
+  write("Gaps", 14, "times", "bold", NAVY, 6);
+  if (result.rules.gaps.length === 0) {
+    write("No cited expectation is out of line with the answers so far.", 11, "helvetica", "normal", NAVY, 6);
+  }
+  result.rules.gaps.forEach((gap, index) => {
+    write(`${index + 1}. ${gap.detail}`, 11, "helvetica", "bold", NAVY, 2);
+    write(gap.summary, 11, "helvetica", "normal", NAVY, 2);
+    write(`${gap.citation}  ${gap.url}`, 9, "helvetica", "italic", MUTED, 6);
+  });
+
+  write("Where the score comes from", 14, "times", "bold", NAVY, 8);
   const categories = [...result.categories].sort((left, right) => right.score - left.score || left.title.localeCompare(right.title));
   for (const category of categories) {
     ensure(36);
@@ -112,6 +123,15 @@ export function buildReportDocument(
     doc.rect(margin, y, Math.max(2, (width * category.score) / 100), 6, "F");
     y += 16;
     write(category.description, 10, "helvetica", "normal", MUTED, 6);
+  }
+
+  if (result.rules.example) {
+    write("Why staff go around an approved tool", 14, "times", "bold", NAVY, 4);
+    write(result.rules.example.intro, 11, "helvetica", "italic", MUTED, 4);
+    write(result.rules.example.summary, 11, "helvetica", "normal", NAVY, 2);
+    write(`${result.rules.example.citation}  ${result.rules.example.url}`, 9, "helvetica", "italic", MUTED, 6);
+    write(result.rules.example.newsSummary, 11, "helvetica", "normal", NAVY, 2);
+    write(`${result.rules.example.newsCitation}  ${result.rules.example.newsUrl}`, 9, "helvetica", "italic", MUTED, 8);
   }
 
   write("Tools you reported", 14, "times", "bold", NAVY, 4);
@@ -158,5 +178,5 @@ export async function downloadReport(
   result: AssessmentResult,
   meta: { partner: string | null; generatedAt: Date },
 ): Promise<void> {
-  buildReportDocument(result, meta).save("shadow-ai-risk-report.pdf");
+  buildReportDocument(result, meta).save("shadow-ai-readiness-report.pdf");
 }

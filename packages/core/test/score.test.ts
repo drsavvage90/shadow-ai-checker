@@ -39,7 +39,7 @@ describe("question bank", () => {
     expect(new Set(ids).size).toBe(ids.length);
     const weight = questionBank.categories.reduce((sum, category) => sum + category.weight, 0);
     expect(weight).toBeCloseTo(1);
-    expect(questionBank.questions).toHaveLength(20);
+    expect(questionBank.questions).toHaveLength(18);
     expect(questionBank.questions.filter((question) => question.role === "scored").length).toBeGreaterThan(10);
   });
 });
@@ -83,15 +83,16 @@ describe("scoreAssessment", () => {
     }
     const weighted = scoreAssessment(onlyData);
     expect(weighted.categories.find((category) => category.id === "data")?.score).toBe(100);
-    expect(weighted.overallScore).toBe(30);
-    expect(weighted.band).toBe("moderate");
+    expect(weighted.profile.segmentId).toBe("law");
+    expect(weighted.overallScore).toBe(18);
+    expect(weighted.band).toBe("low");
   });
 
   it("adds a healthcare note and an Appalachian note flag without changing the score math", () => {
     const answers = {
       ...answerAll(lowestChoice),
       "profile.segment": "healthcare",
-      "profile.states": ["oh", "ky"],
+      "profile.states": "ky",
     } as Answers;
     const result = scoreAssessment(answers);
     expect(result.hipaaNote).toMatch(/HIPAA-aligned/);

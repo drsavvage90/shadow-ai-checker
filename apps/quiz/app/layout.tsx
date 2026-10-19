@@ -5,7 +5,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Shadow AI Checker by Vault Systems",
   description:
-    "A free 10-minute self-assessment that helps small regulated businesses see which AI tools staff use and where the risk is. Answers stay in the browser.",
+    "A free AI readiness check for small law firms, accountants, practices, and banks. It asks whether you are allowed to use AI, and whether staff will use the approved tool. Answers stay in the browser. Not legal advice.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

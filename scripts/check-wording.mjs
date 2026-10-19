@@ -14,6 +14,11 @@ const rules = [
   { name: "prevent violations", re: /prevent(?:s|ed|ing)? violations/i },
   { name: "makes you compliant", re: /\bmakes? you compliant\b/i },
   { name: "makes the firm compliant", re: /\bmakes? (?:the|a) firm compliant\b/i },
+  { name: "prevents sanctions", re: /prevent(?:s|ed|ing)? sanctions/i },
+  { name: "makes you allowed", re: /makes you allowed/i },
+  { name: "ensures you are allowed", re: /ensures? you are allowed/i },
+  { name: "you are compliant", re: /\byou are compliant\b/i },
+  { name: "achieves compliance", re: /achiev(?:e|es|ed|ing) compliance/i },
 ];
 
 const hits = [];

@@ -1,12 +1,16 @@
 import {
-  APPALACHIAN_STATE_IDS,
   INVENTORY_QUESTION_ID,
+  isSegmentId,
+  isStateId,
   PROFILE_QUESTION_IDS,
   SEGMENT_IDS,
+  STATE_IDS,
 } from "./brand.js";
 import questionsRaw from "./data/questions.json";
 import { CatalogError } from "./services.js";
 import type {
+  Answers,
+  AppliesTo,
   Category,
   CategoryId,
   Choice,
@@ -18,7 +22,7 @@ import type {
   QuestionRole,
 } from "./types.js";
 
-const CATEGORY_IDS: readonly CategoryId[] = ["tools", "data", "policy", "training", "accounts"];
+const CATEGORY_IDS: readonly CategoryId[] = ["permission", "behavior", "verification", "data"];
 const ROLES: readonly QuestionRole[] = ["profile", "inventory", "scored"];
 const KINDS: readonly QuestionKind[] = ["single", "multi"];
 const PRIORITIES: readonly FixPriority[] = ["now", "soon", "later"];
@@ -197,6 +201,7 @@ export function parseQuestionBank(raw: unknown): QuestionBank {
     };
     if (category) question.category = category;
     if (typeof hint === "string") question.hint = hint.trim();
+    if (entry.appliesTo !== undefined) question.appliesTo = parseAppliesTo(entry.appliesTo, id);
     questions.push(question);
   }
 
@@ -211,8 +216,8 @@ export function parseQuestionBank(raw: unknown): QuestionBank {
   if (!size || size.role !== "profile" || size.kind !== "single") {
     throw new CatalogError("Profile size question is missing.");
   }
-  if (!states || states.role !== "profile" || states.kind !== "multi") {
-    throw new CatalogError("Profile states question is missing.");
+  if (!states || states.role !== "profile" || states.kind !== "single") {
+    throw new CatalogError("Profile state question must be a single choice.");
   }
   if (!inventory || inventory.role !== "inventory" || inventory.kind !== "multi") {
     throw new CatalogError("Tool inventory question is missing.");
@@ -222,10 +227,13 @@ export function parseQuestionBank(raw: unknown): QuestionBank {
   if (segmentIds.join(",") !== expectedSegments.join(",")) {
     throw new CatalogError("Segment choices must match the segment ids used by the report.");
   }
-  for (const stateId of APPALACHIAN_STATE_IDS) {
+  for (const stateId of STATE_IDS) {
     if (!states.choices.some((choice) => choice.id === stateId)) {
-      throw new CatalogError(`States question is missing ${stateId}.`);
+      throw new CatalogError(`State question is missing ${stateId}.`);
     }
+  }
+  if (states.choices.length !== STATE_IDS.length) {
+    throw new CatalogError("State choices must be Ohio, Kentucky, West Virginia, and Other.");
   }
   for (const categoryId of CATEGORY_IDS) {
     if (!questions.some((question) => question.category === categoryId)) {
@@ -234,6 +242,80 @@ export function parseQuestionBank(raw: unknown): QuestionBank {
   }
 
   return { version: raw.version, categories, questions };
+}
+
+function parseAppliesTo(raw: unknown, questionId: string): AppliesTo {
+  if (!isRecord(raw)) throw new CatalogError(`Question ${questionId} has a bad appliesTo block.`);
+  const appliesTo: AppliesTo = {};
+  if (raw.professions !== undefined) {
+    if (!Array.isArray(raw.professions) || raw.professions.length === 0) {
+      throw new CatalogError(`Question ${questionId} has an empty profession list.`);
+    }
+    const professions: string[] = [];
+    for (const profession of raw.professions) {
+      if (typeof profession !== "string" || !isSegmentId(profession)) {
+        throw new CatalogError(`Question ${questionId} applies to an unknown profession.`);
+      }
+      professions.push(profession);
+    }
+    appliesTo.professions = professions;
+  }
+  if (raw.states !== undefined) {
+    if (!Array.isArray(raw.states) || raw.states.length === 0) {
+      throw new CatalogError(`Question ${questionId} has an empty state list.`);
+    }
+    const states: string[] = [];
+    for (const state of raw.states) {
+      if (typeof state !== "string" || !isStateId(state)) {
+        throw new CatalogError(`Question ${questionId} applies to an unknown state.`);
+      }
+      states.push(state);
+    }
+    appliesTo.states = states;
+  }
+  if (!appliesTo.professions && !appliesTo.states) {
+    throw new CatalogError(`Question ${questionId} has an empty appliesTo block.`);
+  }
+  return appliesTo;
+}
+
+export function questionApplies(question: Question, professionId: string | null, stateId: string | null): boolean {
+  const scope = question.appliesTo;
+  if (!scope) return true;
+  if (scope.professions && (!professionId || !scope.professions.includes(professionId))) return false;
+  if (scope.states && (!stateId || !scope.states.includes(stateId))) return false;
+  return true;
+}
+
+export function readProfileChoice(answers: Answers, bank: QuestionBank = questionBank): {
+  professionId: string | null;
+  stateId: string | null;
+} {
+  const professionQuestion = bank.questions.find((question) => question.id === PROFILE_QUESTION_IDS.segment);
+  const stateQuestion = bank.questions.find((question) => question.id === PROFILE_QUESTION_IDS.states);
+  const profession = answers[PROFILE_QUESTION_IDS.segment];
+  const state = answers[PROFILE_QUESTION_IDS.states];
+  const professionOk =
+    typeof profession === "string" &&
+    isSegmentId(profession) &&
+    (professionQuestion?.choices.some((choice) => choice.id === profession) ?? false);
+  const stateOk =
+    typeof state === "string" &&
+    isStateId(state) &&
+    (stateQuestion?.choices.some((choice) => choice.id === state) ?? false);
+  return {
+    professionId: professionOk ? profession : null,
+    stateId: stateOk ? state : null,
+  };
+}
+
+const PICKER_IDS = new Set<string>([PROFILE_QUESTION_IDS.segment, PROFILE_QUESTION_IDS.states]);
+
+export function questionsInFlow(answers: Answers, bank: QuestionBank = questionBank): Question[] {
+  const { professionId, stateId } = readProfileChoice(answers, bank);
+  return bank.questions.filter(
+    (question) => !PICKER_IDS.has(question.id) && questionApplies(question, professionId, stateId),
+  );
 }
 
 export const questionBank: QuestionBank = parseQuestionBank(questionsRaw);

@@ -93,6 +93,15 @@ button, .primary, .quiet {
 .quiet { background: transparent; color: var(--ink); border: 1px solid var(--line); }
 .quiet:hover { border-color: var(--ink); }
 
+.picker { border: 0; margin: 1.1rem 0 0; padding: 0; }
+.picker legend { font-weight: 650; padding: 0; }
+.picker-options { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+.picker-options .choice { flex: 1 1 180px; }
+
+.rules { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.9rem; }
+.rules li { padding-left: 0.2rem; }
+.rules p:last-child { margin-bottom: 0; }
+
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
 .split article { border-top: 1px solid var(--line); padding-top: 0.8rem; }
 .split ul { margin: 0; padding-left: 1.1rem; }

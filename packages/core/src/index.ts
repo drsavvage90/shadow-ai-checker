@@ -7,11 +7,13 @@ export {
   LIMITATIONS,
   PROFILE_QUESTION_IDS,
   SEGMENT_IDS,
+  STATE_IDS,
   ctaForSegment,
   isSegmentId,
+  isStateId,
   sanitizePartner,
 } from "./brand.js";
-export type { SegmentId } from "./brand.js";
+export type { SegmentId, StateId } from "./brand.js";
 export {
   DEFAULT_SCAN_LIMIT,
   PATTERN_IDS,
@@ -19,7 +21,8 @@ export {
   detectSensitiveData,
   luhnValid,
 } from "./patterns.js";
-export { questionBank, parseQuestionBank } from "./questions.js";
+export { questionApplies, questionBank, questionsInFlow, parseQuestionBank, readProfileChoice } from "./questions.js";
+export { NOT_LEGAL_ADVICE, rulesCatalog, weightsForProfession, buildRulesReport } from "./rules.js";
 export { localOnlySink } from "./report.js";
 export { bandFor, scoreAssessment } from "./score.js";
 export {
@@ -57,6 +60,11 @@ export type {
   QuestionRole,
   ReportFix,
   RiskBand,
+  RuleCitation,
+  RuleExample,
+  RuleGap,
+  RuleNote,
+  RulesReport,
   SensitiveFinding,
   ServiceCategory,
   Signal,

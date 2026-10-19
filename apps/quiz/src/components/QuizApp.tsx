@@ -2,8 +2,10 @@
 
 import {
   BRAND,
-  LIMITATIONS,
+  NOT_LEGAL_ADVICE,
+  PROFILE_QUESTION_IDS,
   questionBank,
+  questionsInFlow,
   sanitizePartner,
   scoreAssessment,
   type Question,
@@ -32,6 +34,12 @@ function toggleMulti(question: Question, current: string[], choiceId: string): s
   return [...withoutExclusive, choiceId];
 }
 
+function pickerQuestion(id: string): Question {
+  const question = questionBank.questions.find((item) => item.id === id);
+  if (!question) throw new Error(`Missing ${id}`);
+  return question;
+}
+
 export function QuizApp() {
   const [ready, setReady] = useState(false);
   const [step, setStep] = useState(-1);
@@ -40,37 +48,62 @@ export function QuizApp() {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const total = questionBank.questions.length;
+  const flow = useMemo(() => questionsInFlow(answers), [answers]);
+  const total = flow.length;
+  const stateQuestion = pickerQuestion(PROFILE_QUESTION_IDS.states);
+  const professionQuestion = pickerQuestion(PROFILE_QUESTION_IDS.segment);
+  const stateAnswer = answers[stateQuestion.id];
+  const professionAnswer = answers[professionQuestion.id];
+  const picked =
+    typeof stateAnswer === "string" &&
+    stateQuestion.choices.some((choice) => choice.id === stateAnswer) &&
+    typeof professionAnswer === "string" &&
+    professionQuestion.choices.some((choice) => choice.id === professionAnswer);
 
   useEffect(() => {
     const stored = loadQuiz();
     if (stored) {
       const nextStep =
-        stored.step >= total && firstOpenStep(stored.answers) < total ? firstOpenStep(stored.answers) : stored.step;
+        stored.step >= questionsInFlow(stored.answers).length && firstOpenStep(stored.answers) < questionsInFlow(stored.answers).length
+          ? firstOpenStep(stored.answers)
+          : stored.step;
       setStep(nextStep);
       setAnswers(stored.answers);
     }
     setPartner(sanitizePartner(new URLSearchParams(window.location.search).get("partner")));
     setReady(true);
-  }, [total]);
+  }, []);
 
   useEffect(() => {
     if (!ready) return;
-    saveQuiz({ version: 1, step, answers });
+    saveQuiz({ version: 2, step, answers });
   }, [ready, step, answers]);
 
   useEffect(() => {
     if (!ready) return;
     headingRef.current?.focus();
-    if (step < 0) document.title = `${BRAND.name} by ${BRAND.maker}`;
+    if (step < 0) document.title = `AI readiness check · ${BRAND.name}`;
     else if (step >= total) document.title = `Your result · ${BRAND.name}`;
     else document.title = `Question ${step + 1} of ${total} · ${BRAND.name}`;
   }, [ready, step, total]);
 
   const result = useMemo(() => scoreAssessment(answers), [answers]);
-  const question = step >= 0 && step < total ? questionBank.questions[step] : undefined;
+  const question = step >= 0 && step < total ? flow[step] : undefined;
   const answered = question ? isAnswered(question, answers) : false;
   const hasAnswers = Object.keys(answers).length > 0;
+
+  function chooseProfile(questionId: string, choiceId: string) {
+    setConfirmDelete(false);
+    setAnswers((current) => {
+      const next: Record<string, string | string[]> = { ...current, [questionId]: choiceId };
+      const allowed = new Set(questionsInFlow(next).map((item) => item.id));
+      for (const key of Object.keys(next)) {
+        if (key === PROFILE_QUESTION_IDS.segment || key === PROFILE_QUESTION_IDS.states) continue;
+        if (!allowed.has(key)) delete next[key];
+      }
+      return next;
+    });
+  }
 
   function selectChoice(choiceId: string) {
     if (!question) return;
@@ -125,25 +158,69 @@ export function QuizApp() {
         </div>
       </header>
       <main id="content" className="wrap">
-        {!ready ? <p className="loading">Loading the assessment…</p> : null}
+        {!ready ? <p className="loading">Loading the readiness check…</p> : null}
 
         {ready && step < 0 ? (
           <section className="panel">
-            <p className="eyebrow">About 10 minutes · stays in this browser</p>
+            <p className="eyebrow">AI readiness check · about 10 minutes · stays in this browser</p>
             <h1 ref={headingRef} tabIndex={-1}>
-              See where AI tools are creating risk in your firm.
+              Am I allowed to use AI, and will my staff actually use the approved tool?
             </h1>
             <p className="lede">
-              A free self-assessment for owners of small law firms, CPA firms, healthcare practices, and community
-              banks. You will get a risk score, a short list of fixes, and a PDF you download here.
+              A free check for small law firms, accounting and CPA firms, healthcare practices, and banks or credit
+              unions. Pick a state and a profession. The questions, the score, and the PDF follow that choice.
             </p>
+            <p className="callout">{NOT_LEGAL_ADVICE}</p>
+            <fieldset className="picker">
+              <legend>{stateQuestion.prompt}</legend>
+              {stateQuestion.hint ? <p className="hint">{stateQuestion.hint}</p> : null}
+              <div className="picker-options">
+                {stateQuestion.choices.map((choice) => {
+                  const selected = stateAnswer === choice.id;
+                  return (
+                    <label key={choice.id} className={selected ? "choice selected" : "choice"}>
+                      <input
+                        type="radio"
+                        name={stateQuestion.id}
+                        value={choice.id}
+                        checked={selected}
+                        onChange={() => chooseProfile(stateQuestion.id, choice.id)}
+                      />
+                      <span>{choice.label}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
+            <fieldset className="picker">
+              <legend>{professionQuestion.prompt}</legend>
+              {professionQuestion.hint ? <p className="hint">{professionQuestion.hint}</p> : null}
+              <div className="picker-options">
+                {professionQuestion.choices.map((choice) => {
+                  const selected = professionAnswer === choice.id;
+                  return (
+                    <label key={choice.id} className={selected ? "choice selected" : "choice"}>
+                      <input
+                        type="radio"
+                        name={professionQuestion.id}
+                        value={choice.id}
+                        checked={selected}
+                        onChange={() => chooseProfile(professionQuestion.id, choice.id)}
+                      />
+                      <span>{choice.label}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
             <div className="landing-actions">
               <button
                 type="button"
                 className="primary"
+                disabled={!picked}
                 onClick={() => setStep(hasAnswers ? firstOpenStep(answers) : 0)}
               >
-                {hasAnswers ? "Continue the assessment" : "Start the assessment"}
+                {hasAnswers && picked ? "Continue the readiness check" : "Start the readiness check"}
               </button>
               {hasAnswers ? (
                 <button type="button" className="quiet" onClick={reset}>
@@ -155,21 +232,22 @@ export function QuizApp() {
               <article>
                 <h2>What you will answer</h2>
                 <ul>
-                  <li>Which AI tools staff use for work</li>
-                  <li>What kinds of information go into them</li>
-                  <li>Whether you have a policy, training, and firm accounts</li>
+                  <li>Whether you have a policy, consent, training, and an approved-tool list</li>
+                  <li>Whether the approved tool is good enough that staff stay on it</li>
+                  <li>For law firms, whether a person checks citations before filing or sending</li>
                 </ul>
               </article>
               <article>
                 <h2>What stays here</h2>
                 <p>
-                  Answers are kept in this tab&apos;s session storage so you can finish or refresh. They are not
-                  uploaded. Close the tab, or choose delete, and they are gone.
+                  Answers stay in this browser. They are not uploaded. The browser extension and the DNS check are
+                  supporting tools for managed devices and the office resolver. They are not this check, and they do
+                  not see unmanaged or personal devices.
                 </p>
               </article>
             </div>
             <ul className="limits">
-              {LIMITATIONS.map((line) => (
+              {result.limitations.map((line) => (
                 <li key={line}>{line}</li>
               ))}
             </ul>
@@ -229,7 +307,7 @@ export function QuizApp() {
 
         {ready && step >= total ? (
           <section className="panel">
-            <p className="eyebrow">Self-assessment result</p>
+            <p className="eyebrow">AI readiness result</p>
             <h1 ref={headingRef} tabIndex={-1}>
               {result.bandTitle}
             </h1>
@@ -238,8 +316,8 @@ export function QuizApp() {
             </p>
             <p className="lede">{result.bandSummary}</p>
             <p className="hint">
-              Based on {result.scoredAnswered} of {result.scoredTotal} scored questions. This helps reduce risk. It is
-              not a legal opinion.
+              Based on {result.scoredAnswered} of {result.scoredTotal} scored questions for this state and profession.
+              This helps reduce risk. It is not legal advice.
             </p>
             {result.profile.segmentLabel ? (
               <p className="meta-line">
@@ -248,15 +326,52 @@ export function QuizApp() {
                 {result.profile.stateLabels.length > 0 ? ` · ${result.profile.stateLabels.join(", ")}` : ""}
               </p>
             ) : null}
-            {result.profile.appalachianStates ? (
-              <p className="callout">
-                You noted Ohio, Kentucky, or West Virginia. The suggestions are written with small firms in those
-                states in mind. Devices the firm does not manage are still outside what this checker can see.
-              </p>
-            ) : null}
+            <p className="callout">{result.rules.notLegalAdvice}</p>
             {result.hipaaNote ? <p className="callout">{result.hipaaNote}</p> : null}
 
-            <h2>Risk by category</h2>
+            <h2>What your rules expect</h2>
+            {result.rules.expectations.length === 0 ? (
+              <p>Pick a state and a profession to see the sources this check can cite. No rule is encoded until you do.</p>
+            ) : (
+              <ol className="rules">
+                {result.rules.expectations.map((item) => (
+                  <li key={item.id}>
+                    <p>{item.summary}</p>
+                    <p className="hint">
+                      <a href={item.url} rel="noreferrer">
+                        {item.citation}
+                      </a>
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            )}
+            {result.rules.notes.map((note) => (
+              <p key={note.id} className="callout">
+                {note.summary}
+              </p>
+            ))}
+
+            <h2>Gaps</h2>
+            {result.rules.gaps.length === 0 ? (
+              <p>No cited expectation is out of line with the answers so far. Missing answers are not treated as gaps.</p>
+            ) : (
+              <ol className="rules">
+                {result.rules.gaps.map((gap) => (
+                  <li key={gap.id}>
+                    <p>{gap.detail}</p>
+                    <p>{gap.summary}</p>
+                    <p className="hint">
+                      <a href={gap.url} rel="noreferrer">
+                        {gap.citation}
+                      </a>
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            )}
+
+            <h2>Where the score comes from</h2>
             <ol className="categories">
               {categories.map((category) => (
                 <li key={category.id}>
@@ -278,12 +393,31 @@ export function QuizApp() {
               ))}
             </ol>
 
+            {result.rules.example ? (
+              <>
+                <h2>Why staff go around an approved tool</h2>
+                <p>{result.rules.example.intro}</p>
+                <p>{result.rules.example.summary}</p>
+                <p className="hint">
+                  <a href={result.rules.example.url} rel="noreferrer">
+                    {result.rules.example.citation}
+                  </a>
+                </p>
+                <p>{result.rules.example.newsSummary}</p>
+                <p className="hint">
+                  <a href={result.rules.example.newsUrl} rel="noreferrer">
+                    {result.rules.example.newsCitation}
+                  </a>
+                </p>
+              </>
+            ) : null}
+
             <h2>Tools you reported</h2>
             <p>{result.tools.length > 0 ? result.tools.join(", ") : "No tools were selected."}</p>
 
             <h2>Prioritized fixes</h2>
             {result.fixes.length === 0 ? (
-              <p>No fixes came out of these answers. Keep the tool list current when staff or products change.</p>
+              <p>No fixes came out of these answers. Keep the approved-tool list current when staff or products change.</p>
             ) : (
               <ol className="fixes">
                 {result.fixes.map((fix) => (
@@ -344,7 +478,7 @@ export function QuizApp() {
             <a href={BRAND.makerUrl} rel="noreferrer">
               {BRAND.maker}
             </a>
-            . Free and open source under the MIT license. The paid Vault product is at{" "}
+            . Free and open source under the MIT license. This check is not legal advice. The paid Vault product is at{" "}
             <a href={BRAND.makerUrl} rel="noreferrer">
               vaultsystems.ai
             </a>
